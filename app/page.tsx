@@ -12,14 +12,12 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <>
-      {/* ── Hero ── */}
-      <HeroSection />
-
       {/* ── Play Now Embedded Game ── */}
       <section style={{
         width: '100%',
         backgroundColor: 'var(--bg)',
-        padding: '2rem 0',
+        paddingTop: '10rem',
+        paddingBottom: '2rem',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -43,6 +41,9 @@ export default function Home() {
           />
         </div>
       </section>
+
+      {/* ── Hero ── */}
+      <HeroSection />
 
       {/* ── Social Proof Strip ── */}
       <section style={{

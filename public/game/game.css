@@ -1,14 +1,34 @@
 :root {
-    --bg-color: #553522; /* Deep earthy brown for background */
+    --bg-color: #3b2214;
+    --bg-surface: #4a2e1c;
+    --bg-card: rgba(255, 255, 255, 0.08);
+    --bg-glass: rgba(74, 46, 28, 0.85);
     --wood-light: #f4a259;
     --wood-main: #d97828;
     --wood-dark: #8c4212;
+    --wood-deeper: #5c2d0e;
     --grass-light: #94df58;
     --grass-main: #6abf28;
     --grass-dark: #3a7511;
     --yellow-star: #ffcc00;
     --text-main: #ffffff;
-    --grid-gap: 2px;
+    --text-muted: rgba(255, 255, 255, 0.6);
+    --text-dim: rgba(255, 255, 255, 0.35);
+    --accent: #fb8500;
+    --accent-glow: rgba(251, 133, 0, 0.3);
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-warm: rgba(244, 162, 89, 0.25);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.25);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.35);
+    --shadow-glow: 0 0 20px var(--accent-glow);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --radius-pill: 999px;
+    --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --grid-gap: 0px;
 }
 
 * {
@@ -21,11 +41,11 @@
 
 body {
     background-color: var(--bg-color);
-    /* Soft grid pattern for background mimicking casual mobile games */
-    background-image: 
-        linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
-    background-size: 40px 40px;
+    background-image:
+        radial-gradient(circle at 15% 15%, rgba(244, 162, 89, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 25%, rgba(251, 133, 0, 0.06) 0%, transparent 35%),
+        radial-gradient(circle at 50% 90%, rgba(244, 162, 89, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 75% 60%, rgba(140, 66, 18, 0.08) 0%, transparent 30%);
     color: var(--text-main);
     overflow: hidden;
     width: 100vw;
@@ -45,7 +65,79 @@ body {
     display: none !important;
 }
 
-/* Main Menu */
+/* ═══════════════════════════════════════════
+   BUTTONS — Modern pill style
+   ═══════════════════════════════════════════ */
+.wood-btn {
+    background: linear-gradient(135deg, var(--wood-light), var(--wood-main));
+    border: 2px solid var(--wood-dark);
+    color: var(--text-main);
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    transition: all var(--transition);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-md);
+    letter-spacing: 0.5px;
+    outline: none;
+    -webkit-text-stroke: 0;
+}
+
+.wood-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    filter: brightness(1.08);
+}
+
+.wood-btn:active {
+    transform: translateY(1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.wood-btn.large {
+    font-size: 22px;
+    padding: 16px 64px;
+    border-radius: var(--radius-pill);
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #ffca58, #fb8500);
+    border: 2px solid rgba(140, 66, 18, 0.5);
+    box-shadow: var(--shadow-md), 0 0 24px rgba(251, 133, 0, 0.25);
+}
+
+.wood-btn.large:hover {
+    box-shadow: var(--shadow-lg), 0 0 40px rgba(251, 133, 0, 0.4);
+}
+
+.wood-btn.small {
+    font-size: 13px;
+    padding: 10px 22px;
+    border-radius: var(--radius-pill);
+    letter-spacing: 0.5px;
+}
+
+.wood-btn.icon {
+    padding: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-warm);
+    backdrop-filter: blur(8px);
+}
+
+.wood-btn.icon:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--wood-light);
+}
+
+/* ═══════════════════════════════════════════
+   MAIN MENU
+   ═══════════════════════════════════════════ */
 #main-menu {
     position: absolute;
     inset: 0;
@@ -53,226 +145,393 @@ body {
     flex-direction: column;
     justify-content: space-between;
     z-index: 1000;
-    background: rgba(85, 53, 34, 0.4); /* subtle darkening */
+    background:
+        radial-gradient(ellipse at 50% 30%, rgba(244, 162, 89, 0.08) 0%, transparent 60%),
+        linear-gradient(180deg, rgba(59, 34, 20, 0.3) 0%, rgba(59, 34, 20, 0.6) 100%);
+    overflow: hidden;
+}
+
+/* Decorative background elements */
+#main-menu::before {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(244, 162, 89, 0.08) 0%, transparent 70%);
+    top: -80px;
+    right: -60px;
+    pointer-events: none;
+    animation: floatOrb1 8s ease-in-out infinite;
+}
+
+#main-menu::after {
+    content: '';
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(251, 133, 0, 0.06) 0%, transparent 70%);
+    bottom: -60px;
+    left: -40px;
+    pointer-events: none;
+    animation: floatOrb2 10s ease-in-out infinite;
+}
+
+@keyframes floatOrb1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-20px, 30px) scale(1.1); }
+}
+
+@keyframes floatOrb2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(25px, -20px) scale(1.15); }
+}
+
+/* Additional decorative dots scattered in menu */
+.menu-center::before {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 8%;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(244, 162, 89, 0.2);
+    box-shadow:
+        120px 40px 0 rgba(255, 204, 0, 0.15),
+        -30px 180px 0 4px rgba(244, 162, 89, 0.1),
+        280px 120px 0 2px rgba(251, 133, 0, 0.12),
+        350px 200px 0 rgba(255, 204, 0, 0.1),
+        50px 280px 0 3px rgba(244, 162, 89, 0.08),
+        400px 60px 0 5px rgba(140, 66, 18, 0.1),
+        200px -30px 0 2px rgba(251, 133, 0, 0.1),
+        -20px 80px 0 6px rgba(244, 162, 89, 0.06);
+    pointer-events: none;
+    animation: twinkleDots 6s ease-in-out infinite alternate;
+}
+
+@keyframes twinkleDots {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
 }
 
 .menu-top {
     display: flex;
     align-items: center;
-    padding: 30px 20px;
-    gap: 15px;
+    padding: 14px 20px;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
 }
 
-/* Wood Text styling for a bubbly, heavy appearance */
+/* Wood Text — cleaner, lighter treatment */
 .wood-text {
-    font-weight: 900;
+    font-weight: 800;
     color: var(--text-main);
-    letter-spacing: 2px;
-    -webkit-text-stroke: 2px var(--wood-dark);
-    text-shadow: 0 4px 0 var(--wood-dark), 0 6px 4px rgba(0,0,0,0.3);
+    letter-spacing: 1px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     text-transform: uppercase;
+    -webkit-text-stroke: 0;
 }
 
 .game-title {
-    font-size: 42px;
+    font-size: 36px;
+    background: linear-gradient(135deg, #fff 0%, var(--wood-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
 }
 
-/* Wooden Panels */
-.wood-panel, .wood-panel-small {
-    background: linear-gradient(to bottom, var(--wood-light), var(--wood-main));
-    border: 4px solid var(--wood-dark);
-    border-radius: 16px;
-    box-shadow: inset 0 -4px 0 rgba(0,0,0,0.15), inset 0 4px 0 rgba(255,255,255,0.2), 0 8px 12px rgba(0,0,0,0.3);
-    position: relative;
+/* Star counter */
+.wood-panel-small {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-warm);
+    border-radius: var(--radius-pill);
+    backdrop-filter: blur(8px);
+    box-shadow: none;
 }
 
-/* Decorate the panels with little grass pseudo-elements */
-.wood-panel::after, .wood-panel-small::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 10%;
-    width: 80%;
-    height: 12px;
-    background: var(--grass-main);
-    border-radius: 10px 10px 0 0;
-    border: 3px solid var(--wood-dark);
-    border-bottom: none;
-    z-index: -1;
+.wood-panel-small::after {
+    display: none;
 }
 
 .coin-counter {
-    padding: 8px 16px;
+    padding: 6px 14px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-weight: 900;
-    font-size: 20px;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 16px;
     color: var(--text-main);
-    -webkit-text-stroke: 1px var(--wood-dark);
-    border-radius: 20px;
+    -webkit-text-stroke: 0;
+    border-radius: var(--radius-pill);
 }
 
 .coin-icon {
-    font-size: 22px;
-    filter: drop-shadow(0 2px 0 var(--wood-dark));
+    font-size: 18px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
 }
 
 .menu-center {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 30px;
+    gap: 24px;
     flex: 1;
     justify-content: center;
+    position: relative;
+    z-index: 1;
 }
 
+/* Replace boring wood panel graphic with a decorative puzzle grid */
 .menu-graphic {
-    width: 260px;
-    height: 340px;
-    background: linear-gradient(to bottom, #d29158, #b8692a);
-    border-radius: 24px;
+    width: 160px;
+    height: 160px;
+    border-radius: var(--radius-xl);
     position: relative;
+    background:
+        linear-gradient(135deg, rgba(244, 162, 89, 0.12) 0%, rgba(251, 133, 0, 0.08) 100%);
+    border: 1px solid var(--border-warm);
+    backdrop-filter: blur(4px);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 2px;
+    padding: 8px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+/* Mini puzzle tiles inside the graphic */
+.menu-graphic::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 2px;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(244, 162, 89, 0.15) 0px,
+            rgba(244, 162, 89, 0.15) calc(33.33% - 1px),
+            rgba(140, 66, 18, 0.3) calc(33.33% - 1px),
+            rgba(140, 66, 18, 0.3) calc(33.33% + 1px),
+            rgba(244, 162, 89, 0.15) calc(33.33% + 1px)
+        ),
+        repeating-linear-gradient(
+            0deg,
+            rgba(244, 162, 89, 0.15) 0px,
+            rgba(244, 162, 89, 0.15) calc(33.33% - 1px),
+            rgba(140, 66, 18, 0.3) calc(33.33% - 1px),
+            rgba(140, 66, 18, 0.3) calc(33.33% + 1px),
+            rgba(244, 162, 89, 0.15) calc(33.33% + 1px)
+        );
+    border-radius: var(--radius-md);
+    pointer-events: none;
+}
+
+.wood-panel::after {
+    display: none;
 }
 
 .menu-bottom {
     display: flex;
     justify-content: center;
-    gap: 20px;
-    padding: 30px 20px 40px;
-}
-
-/* Chunky Wood Buttons */
-.wood-btn {
-    background: linear-gradient(to bottom, var(--wood-light), var(--wood-main));
-    border: 4px solid var(--wood-dark);
-    color: var(--text-main);
-    font-weight: 900;
-    text-transform: uppercase;
-    cursor: pointer;
+    gap: 12px;
+    padding: 14px 20px 20px;
+    background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.2));
     position: relative;
-    transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-    -webkit-text-stroke: 1.5px var(--wood-dark);
-    text-shadow: 0 2px 0 var(--wood-dark);
-    /* Creates the thick 3D bottom edge */
-    box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2), inset 0 4px 0 rgba(255,255,255,0.2), 0 8px 0 var(--wood-dark), 0 12px 10px rgba(0,0,0,0.3);
+    z-index: 1;
 }
 
-.wood-btn:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.05);
+.menu-bottom .wood-btn.small {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-warm);
+    backdrop-filter: blur(8px);
+    font-size: 12px;
+    padding: 10px 20px;
+    border-radius: var(--radius-pill);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-sm);
 }
 
-.wood-btn:active, .wood-btn.active {
-    transform: translateY(6px);
-    box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2), inset 0 4px 0 rgba(255,255,255,0.2), 0 2px 0 var(--wood-dark), 0 4px 5px rgba(0,0,0,0.2);
+.menu-bottom .wood-btn.small:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--wood-light);
+    box-shadow: var(--shadow-md);
 }
 
-.wood-btn.large {
-    font-size: 28px;
-    padding: 16px 50px;
-    border-radius: 40px;
-    letter-spacing: 2px;
-    /* Make the large button more vibrant (orange/yellow) */
-    background: linear-gradient(to bottom, #ffca58, #fb8500);
+.menu-bottom .wood-btn.small.active {
+    background: linear-gradient(135deg, var(--wood-light), var(--wood-main));
+    border-color: var(--wood-dark);
+    transform: none;
+    box-shadow: var(--shadow-sm), 0 0 12px var(--accent-glow);
 }
 
-.wood-btn.small {
-    font-size: 16px;
-    padding: 12px 24px;
-    border-radius: 30px;
-    letter-spacing: 1px;
+.menu-bottom .wood-btn.icon {
+    width: 44px;
+    height: 44px;
 }
 
-.wood-btn.icon {
-    padding: 10px;
-    width: 50px;
-    height: 50px;
-    border-radius: 25px;
-    font-size: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Header UI */
+/* ═══════════════════════════════════════════
+   GAME HEADER
+   ═══════════════════════════════════════════ */
 #game-header {
-    height: 80px;
-    padding: 0 20px;
+    height: 54px;
+    padding: 0 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 100;
+    background: rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(4px);
 }
 
-.header-left, .header-center, .header-right {
-    flex: 1;
+.header-left,
+.header-center,
+.header-right {
     display: flex;
     align-items: center;
 }
 
-.header-left { justify-content: flex-start; }
-.header-center { justify-content: center; }
-.header-right { justify-content: flex-end; }
+.header-left { flex: 0 0 auto; }
+.header-center { flex: 1; justify-content: center; }
+.header-right { flex: 0 0 auto; }
 
-.level-info {
-    font-size: 28px;
-    white-space: nowrap;
+.header-stats {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-warm);
+    border-radius: var(--radius-pill);
+    padding: 6px 20px;
+    backdrop-filter: blur(8px);
 }
 
-/* Level Select Screen */
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+}
+
+.stat-label {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+}
+
+.stat-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: 0.5px;
+}
+
+.stat-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border-warm);
+}
+
+.level-info {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    -webkit-text-stroke: 0;
+}
+
+/* ═══════════════════════════════════════════
+   LEVEL SELECT SCREEN
+   ═══════════════════════════════════════════ */
 #level-select-screen {
     position: absolute;
     inset: 0;
     display: flex;
     flex-direction: column;
     z-index: 1000;
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(244, 162, 89, 0.06) 0%, transparent 50%),
+        rgba(59, 34, 20, 0.4);
+}
+
+#level-select-screen .menu-top {
+    padding: 16px 20px;
+}
+
+#level-select-screen .wood-text {
+    font-size: 24px;
+    letter-spacing: 2px;
 }
 
 .level-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    padding: 20px 30px;
+    gap: 12px;
+    padding: 12px 20px;
     overflow-y: auto;
     flex: 1;
 }
 
 .level-btn {
     aspect-ratio: 1;
-    border-radius: 20px;
-    font-size: 28px;
+    border-radius: var(--radius-lg);
+    font-size: 24px;
+    font-weight: 700;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 5px;
-    box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2), inset 0 4px 0 rgba(255,255,255,0.2), 0 8px 0 var(--wood-dark), 0 12px 10px rgba(0,0,0,0.3);
+    gap: 4px;
+    background: linear-gradient(135deg, var(--wood-light), var(--wood-main));
+    border: 2px solid var(--wood-dark);
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition);
+    cursor: pointer;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    -webkit-text-stroke: 0;
+    color: var(--text-main);
+}
+
+.level-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
 }
 
 .level-btn.locked {
-    background: linear-gradient(to bottom, #777, #555);
-    border-color: #333;
-    color: #999;
-    box-shadow: inset 0 -4px 0 rgba(0,0,0,0.5), inset 0 4px 0 rgba(255,255,255,0.1), 0 4px 0 #222, 0 6px 5px rgba(0,0,0,0.3);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+    border: 1px solid var(--border-subtle);
+    color: var(--text-dim);
+    box-shadow: none;
     pointer-events: none;
-    -webkit-text-stroke: 1px #333;
+    -webkit-text-stroke: 0;
     text-shadow: none;
-    transform: translateY(4px);
+    transform: none;
 }
 
 .level-btn .stars-mini {
-    font-size: 14px;
+    font-size: 12px;
     color: var(--yellow-star);
-    -webkit-text-stroke: 1px var(--wood-dark);
+    -webkit-text-stroke: 0;
 }
 
-/* Modals & Overlays */
+/* ═══════════════════════════════════════════
+   MODALS & OVERLAYS
+   ═══════════════════════════════════════════ */
 .fullscreen-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(5px);
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -287,37 +546,134 @@ body {
 }
 
 .modal-content {
-    padding: 40px 50px;
+    padding: 32px 40px;
     text-align: center;
     transform: scale(1);
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-warm);
+    border-radius: var(--radius-xl);
+    backdrop-filter: blur(16px);
+    box-shadow: var(--shadow-lg);
+}
+
+.wood-panel {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-warm);
+    border-radius: var(--radius-xl);
+    backdrop-filter: blur(16px);
+    box-shadow: var(--shadow-lg);
 }
 
 .fullscreen-overlay.hidden .modal-content {
-    transform: scale(0.8);
+    transform: scale(0.9);
 }
 
-/* Board Area Customization */
-/* Explicitly size the outer container to 616x416 to accommodate the 600x400 inner playable area + 8px borders (16px total) */
-#board {
-    width: 616px; 
-    height: 416px;
-    box-sizing: border-box; /* 616 - 16 = 600 content width */
-    margin: auto;
+/* ═══════════════════════════════════════════
+   GAME AREA (Board + Sidebar)
+   ═══════════════════════════════════════════ */
+#game-area {
+    display: flex;
+    align-items: stretch;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.board-wrap {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+    background: transparent;
     position: relative;
-    border: 8px solid var(--wood-dark);
-    border-radius: 12px;
-    background: #6c462c;
-    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4), 0 10px 15px rgba(0,0,0,0.3);
-    background-image: radial-gradient(rgba(0,0,0,0.1) 2px, transparent 2px);
-    background-size: 8px 8px; 
 }
 
-/* Puzzle Pieces */
+.board-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border: 2px dashed rgba(244, 162, 89, 0.25);
+    border-radius: 22px;
+    pointer-events: none;
+}
+
+#board {
+    box-sizing: border-box;
+    position: relative;
+    border: 4px solid var(--wood-dark);
+    border-radius: var(--radius-sm);
+    background: var(--bg-surface);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.25), var(--shadow-lg);
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+/* ── Sidebar ── */
+#game-sidebar {
+    width: 176px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-card);
+    border-left: 3px solid var(--wood-dark);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.sidebar-section {
+    padding: 14px 14px 12px;
+}
+
+.sidebar-divider {
+    border: none;
+    border-top: 2px solid rgba(244, 162, 89, 0.25);
+    margin: 0;
+}
+
+.sidebar-label {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+}
+
+.ref-image-box {
+    width: 100%;
+    aspect-ratio: 2/3;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-warm);
+    background-color: rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.sidebar-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Level size label */
+.level-size {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+/* ═══════════════════════════════════════════
+   PUZZLE PIECES — FLUSH, NO RADIUS
+   ═══════════════════════════════════════════ */
 .piece-container {
     position: absolute;
     cursor: grab;
@@ -338,13 +694,14 @@ body {
     transform: rotateY(180deg);
 }
 
-.piece-front, .piece-back {
+.piece-front,
+.piece-back {
     width: 100%;
     height: 100%;
     position: absolute;
     inset: 0;
     backface-visibility: hidden;
-    border-radius: 8px;
+    border-radius: 0;
 }
 
 .piece-front {
@@ -355,17 +712,16 @@ body {
     content: '';
     position: absolute;
     inset: 0;
-    border: 2px solid rgba(255, 255, 255, 0.4);
-    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0;
     pointer-events: none;
 }
 
-/* Card Backs - Wooden Tile Aesthetic */
+/* Card Backs — Clean flat style */
 .piece-back {
-    background: linear-gradient(to bottom, #d29158, #b8692a);
-    border: 3px solid var(--wood-dark);
-    border-radius: 10px;
-    box-shadow: inset 0 -4px 0 rgba(0,0,0,0.15), inset 0 4px 0 rgba(255,255,255,0.2);
+    background: linear-gradient(135deg, var(--wood-main), var(--wood-deeper));
+    border: 1px solid rgba(140, 66, 18, 0.4);
+    border-radius: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -373,80 +729,93 @@ body {
     transform: rotateZ(0deg);
     position: relative;
     overflow: hidden;
+    box-shadow: none;
 }
 
+/* Subtle pattern on card back instead of star */
 .piece-back::before {
     content: '';
-    width: 32px;
-    height: 32px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffcc00' stroke='%238c4212' stroke-width='2' stroke-linejoin='round'%3E%3Cpolygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'%3E%3C/polygon%3E%3C/svg%3E");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    filter: drop-shadow(0 2px 0 var(--wood-dark));
-    opacity: 0.8;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.03) 50%, transparent 60%),
+        linear-gradient(-45deg, transparent 40%, rgba(255, 255, 255, 0.03) 50%, transparent 60%);
+    background-size: 100% 100%;
+    opacity: 1;
+    filter: none;
 }
 
-/* SVG Helpers */
+/* ═══════════════════════════════════════════
+   SVG ICONS
+   ═══════════════════════════════════════════ */
 .icon-svg {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     display: inline-block;
     vertical-align: middle;
 }
 
 .wood-btn.icon .icon-svg {
-    width: 28px;
-    height: 28px;
+    width: 22px;
+    height: 22px;
 }
 
 .stars-svg {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-bottom: 25px;
+    gap: 8px;
+    margin-bottom: 20px;
 }
 
 .stars-svg .icon-svg {
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     animation: floatStars 2s infinite ease-in-out alternate;
-    filter: drop-shadow(0 4px 0 var(--wood-dark));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
-/* Dragging State */
+/* ═══════════════════════════════════════════
+   DRAGGING STATE
+   ═══════════════════════════════════════════ */
 .piece-container.dragging {
     cursor: grabbing;
     z-index: 1000;
 }
+
 .piece-container.dragging .piece-front,
 .piece-container.dragging .piece-back {
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
-    border: 3px solid white;
-}
-.piece-container.dragging .piece-front {
-    filter: brightness(1.15) contrast(1.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: -2px;
 }
 
-/* Merge Glow */
+.piece-container.dragging .piece-front {
+    filter: brightness(1.1) contrast(1.05);
+}
+
+/* Merge animation */
 .piece-container.merge-flash .piece-front {
-    animation: mergeScale 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: mergeScale 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 @keyframes mergeScale {
-    0% { transform: scale(1); filter: brightness(1); }
-    50% { transform: scale(1.1); filter: brightness(1.4); z-index: 999; }
-    100% { transform: scale(1); filter: brightness(1); }
+    0% { transform: scale(1) rotateY(180deg); filter: brightness(1); }
+    50% { transform: scale(1.08) rotateY(180deg); filter: brightness(1.3); }
+    100% { transform: scale(1) rotateY(180deg); filter: brightness(1); }
 }
 
-/* Memorize Overlay */
+/* ═══════════════════════════════════════════
+   MEMORIZE OVERLAY
+   ═══════════════════════════════════════════ */
 #memorize-overlay {
     position: absolute;
     inset: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(2px);
     z-index: 2000;
     opacity: 1;
@@ -458,30 +827,34 @@ body {
     opacity: 0;
 }
 
-/* Bubbly Cartoon Text */
+/* Bubbly text — cleaner version */
 .bubbly-text {
-    font-size: 72px;
-    font-weight: 900;
+    font-size: 56px;
+    font-weight: 800;
     letter-spacing: 4px;
     color: var(--yellow-star);
     text-transform: uppercase;
     position: relative;
-    -webkit-text-stroke: 4px var(--wood-dark);
-    text-shadow: 0 8px 0 var(--wood-dark), 0 12px 10px rgba(0,0,0,0.4);
+    -webkit-text-stroke: 0;
+    text-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.4),
+        0 0 30px rgba(255, 204, 0, 0.3);
     animation: bounceScale 1.5s infinite cubic-bezier(0.28, 0.84, 0.42, 1);
 }
 
 @keyframes bounceScale {
     0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.08) translateY(-10px); }
+    50% { transform: scale(1.06) translateY(-6px); }
 }
 
-/* Win Overlay */
+/* ═══════════════════════════════════════════
+   WIN OVERLAY
+   ═══════════════════════════════════════════ */
 #win-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(5px);
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -495,34 +868,213 @@ body {
     pointer-events: none;
 }
 
-/* Using existing .wood-panel logic mixed with .win-modal */
 .win-modal {
-    padding: 50px 70px;
+    padding: 40px 56px;
     text-align: center;
     transform: scale(1);
     transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
 }
 
 #win-overlay.hidden .win-modal {
-    transform: scale(0.8);
+    transform: scale(0.9);
 }
 
 .win-modal h2 {
-    font-size: 42px;
-    margin-bottom: 10px;
+    font-size: 32px;
+    margin-bottom: 8px;
+    -webkit-text-stroke: 0;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .stars {
-    font-size: 48px;
-    letter-spacing: 10px;
-    text-shadow: 0 4px 0 var(--wood-dark);
+    font-size: 40px;
+    letter-spacing: 8px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes floatStars {
     from { transform: translateY(0px); }
-    to { transform: translateY(-8px); }
+    to { transform: translateY(-6px); }
 }
+
+/* ═══════════════════════════════════════════
+   STAR ICON TWEAKS
+   ═══════════════════════════════════════════ */
+.star-icon {
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+}
+
+/* ═══════════════════════════════════════════
+   NEW UI ELEMENTS (Ported from Ref)
+   ═══════════════════════════════════════════ */
+.menu-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 20px;
+    gap: 12px;
+    position: relative;
+    z-index: 10;
+    width: 100%;
+}
+
+.menu-economy-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.coin-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-warm);
+    border-radius: var(--radius-pill);
+    font-weight: 700;
+    font-size: 16px;
+    box-shadow: var(--shadow-sm);
+}
+
+.volume-slider-container {
+    width: 120px;
+    margin-top: 8px;
+}
+
+.volume-slider-container input {
+    width: 100%;
+    accent-color: var(--wood-main);
+    cursor: pointer;
+}
+
+.menu-float-tile {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+    animation: floatOrb1 10s infinite ease-in-out alternate;
+}
+
+.menu-float-tile:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+.menu-float-tile:nth-child(2) { top: 20%; right: 15%; animation-delay: -2s; animation-name: floatOrb2; }
+.menu-float-tile:nth-child(3) { bottom: 30%; left: 20%; animation-delay: -4s; }
+.menu-float-tile:nth-child(4) { bottom: 15%; right: 10%; animation-delay: -6s; animation-name: floatOrb2; }
+.menu-float-tile:nth-child(5) { top: 40%; left: 5%; animation-delay: -8s; }
+.menu-float-tile:nth-child(6) { top: 60%; right: 5%; animation-delay: -1s; }
+
+.game-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    width: 100%;
+}
+
+.game-stat-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.gstat-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 4px 12px;
+}
+
+.gstat-sep {
+    width: 1px;
+    height: 16px;
+    background: var(--border-warm);
+}
+
+.game-toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.coin-inline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    padding: 4px 12px;
+}
+
+.powerup-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+}
+
+.powerup-btn:active {
+    transform: translateY(1px);
+}
+
+.shop-card {
+    min-width: 300px;
+}
+
+.shop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+    width: 100%;
+    min-height: 120px;
+    background: rgba(0,0,0,0.2);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    border: 1px solid var(--border-warm);
+}
+
+.shop-placeholder {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    font-style: italic;
+    font-size: 14px;
+}
+
+.level-end-card {
+    position: relative;
+}
+
+.level-end-title-pill {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: var(--shadow-md);
+    white-space: nowrap;
+}
+
+.confetti-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+}
+

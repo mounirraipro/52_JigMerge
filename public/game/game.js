@@ -1,80 +1,272 @@
+/* ═══════════════════════════════════════════
+   JigMerge — Game Engine
+   Grid-based swap + merge puzzle
+   ═══════════════════════════════════════════ */
+
+// ── DOM References ──
 const BOARD = document.getElementById('board');
-const LEVEL_DISPLAY = document.getElementById('level-display');
+const LEVEL_DISPLAY = document.getElementById('game-level-title');
 const NEXT_BTN = document.getElementById('next-level-btn');
 const WIN_OVERLAY = document.getElementById('win-overlay');
+const MOVE_COUNT_EL = document.getElementById('move-count');
+const TIMER_EL = document.getElementById('timer-display');
+const REF_IMAGE_EL = document.getElementById('ref-image');
 
-// Game Config
-let currentLevel = 1;
-let unlockedLevel = 1; // Tracks progression
-const SNAP_THRESHOLD = 20; // pixels
+// ── Game Config ──
+let currentCategory = 1;
+let currentPuzzleIndex = 0;
+let unlockedLevel = 1;
 let pieces = [];
-let groups = {}; // groupId: [pieceIds]
+let groups = {};        // groupId → [pieceIds]
 let nextGroupId = 1;
+let grid = [];          // 2D array: grid[row][col] = pieceId
+let gridRows = 0;
+let gridCols = 0;
+let pieceW = 0;
+let pieceH = 0;
 
-// Audio System
-let isMuted = false;
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function playSound(type) {
-    if (isMuted) return;
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    
-    if (type === 'snap') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.1);
-    } else if (type === 'drag') {
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.05);
-    } else if (type === 'win') {
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-        osc.frequency.setValueAtTime(600, audioCtx.currentTime + 0.1);
-        osc.frequency.setValueAtTime(800, audioCtx.currentTime + 0.2);
-        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.5);
+// ── Stats ──
+let moveCount = 0;
+let timerSeconds = 0;
+let timerInterval = null;
+let topZIndex = 10;
+
+// ── Audio System ──
+class SoundEngine {
+    constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        this.initialized = false;
+        this.sfxVolume = 0.4;
+    }
+
+    init() {
+        if (this.initialized) return;
+        try {
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            this.initialized = true;
+        } catch (e) {
+            console.warn('Web Audio API not supported');
+        }
+    }
+
+    _note(freq, type, duration, volume, delay = 0) {
+        if (!this.ctx || !this.enabled) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime + delay);
+        gain.gain.setValueAtTime(volume * this.sfxVolume, this.ctx.currentTime + delay);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + delay + duration);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(this.ctx.currentTime + delay);
+        osc.stop(this.ctx.currentTime + delay + duration);
+    }
+
+    pickup() {
+        this._note(880, 'sine', 0.12, 0.3);
+        this._note(1320, 'sine', 0.08, 0.15, 0.03);
+    }
+
+    drop() {
+        this._note(220, 'sine', 0.15, 0.35);
+        this._note(165, 'triangle', 0.1, 0.2, 0.02);
+    }
+
+    merge() {
+        this._note(523, 'sine', 0.2, 0.3);
+        this._note(659, 'sine', 0.2, 0.25, 0.08);
+        this._note(784, 'sine', 0.3, 0.2, 0.16);
+    }
+
+    win() {
+        const notes = [523, 659, 784, 1047, 1319, 1568];
+        notes.forEach((freq, i) => {
+            this._note(freq, 'sine', 0.35, 0.25, i * 0.1);
+            this._note(freq * 1.5, 'triangle', 0.25, 0.1, i * 0.1 + 0.05);
+        });
+    }
+
+    click() {
+        this._note(600, 'sine', 0.06, 0.15);
     }
 }
 
-// Level Configs
-const LEVELS = {
-    1: { rows: 3, cols: 3, image: 'https://picsum.photos/seed/level1/600/400' },
-    2: { rows: 4, cols: 4, image: 'https://picsum.photos/seed/level2/600/400' },
-    3: { rows: 5, cols: 5, image: 'https://picsum.photos/seed/level3/600/400' }
-};
+const soundEngine = new SoundEngine();
 
+function playSound(type) {
+    soundEngine.init();
+    if (type === 'snap') soundEngine.merge();
+    else if (type === 'drag') soundEngine.pickup();
+    else if (type === 'win') soundEngine.win();
+    else if (type === 'drop') soundEngine.drop();
+    else if (type === 'click') soundEngine.click();
+}
+
+// ── Confetti System ──
+class ConfettiSystem {
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.particles = [];
+        this.running = false;
+        this.colors = ['#e8614d', '#22c55e', '#6366f1', '#eab308', '#f97316', '#ec4899', '#14b8a6'];
+    }
+
+    resize() {
+        this.canvas.width = this.canvas.offsetWidth;
+        this.canvas.height = this.canvas.offsetHeight;
+    }
+
+    burst(count = 80) {
+        this.resize();
+        this.particles = [];
+        const cx = this.canvas.width / 2;
+        const cy = this.canvas.height * 0.35;
+
+        for (let i = 0; i < count; i++) {
+            const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
+            const speed = 3 + Math.random() * 6;
+            this.particles.push({
+                x: cx,
+                y: cy,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed - 3,
+                size: 4 + Math.random() * 6,
+                color: this.colors[Math.floor(Math.random() * this.colors.length)],
+                rotation: Math.random() * 360,
+                rotSpeed: (Math.random() - 0.5) * 12,
+                gravity: 0.12 + Math.random() * 0.08,
+                friction: 0.98,
+                opacity: 1,
+                shape: Math.random() > 0.5 ? 'rect' : 'circle',
+            });
+        }
+
+        if (!this.running) {
+            this.running = true;
+            this._animate();
+        }
+    }
+
+    _animate() {
+        if (!this.running) return;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        let alive = 0;
+        for (const p of this.particles) {
+            p.vy += p.gravity;
+            p.vx *= p.friction;
+            p.vy *= p.friction;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rotation += p.rotSpeed;
+            p.opacity -= 0.008;
+
+            if (p.opacity <= 0) continue;
+            alive++;
+
+            this.ctx.save();
+            this.ctx.translate(p.x, p.y);
+            this.ctx.rotate((p.rotation * Math.PI) / 180);
+            this.ctx.globalAlpha = p.opacity;
+            this.ctx.fillStyle = p.color;
+
+            if (p.shape === 'rect') {
+                this.ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+            } else {
+                this.ctx.beginPath();
+                this.ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
+            this.ctx.restore();
+        }
+
+        if (alive > 0) {
+            requestAnimationFrame(() => this._animate());
+        } else {
+            this.running = false;
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+    }
+
+    stop() {
+        this.running = false;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+}
+let confetti = null;
+
+// ── Level Configs ──
+// Each level folder has ~20 images. We pick a random one each play.
+function buildLevels() {
+    const levels = {};
+    // Levels 1-7: 3×3 (easy)
+    for (let i = 1; i <= 7; i++) {
+        levels[i] = { rows: 3, cols: 3, folder: `level${i}` };
+    }
+    // Levels 8-13: 6×6 (medium)
+    for (let i = 8; i <= 13; i++) {
+        levels[i] = { rows: 6, cols: 6, folder: `level${i}` };
+    }
+    // Levels 14-19: 9×9 (hard)
+    for (let i = 14; i <= 19; i++) {
+        levels[i] = { rows: 9, cols: 9, folder: `level${i}` };
+    }
+    return levels;
+}
+
+const LEVELS = buildLevels();
+
+// Helper: format standard names for puzzles inside a category
+function getPuzzleName(categoryId, index) {
+    if (window.LEVEL_IMAGES && window.LEVEL_IMAGES[categoryId]) {
+        let name = window.LEVEL_IMAGES[categoryId][index];
+        if (name) {
+            // Remove extension and capitalize words
+            name = name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+            return name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        }
+    }
+    return `Puzzle ${index + 1}`;
+}
+
+// Get specific image from the level folder
+function getSelectedImage(categoryId, puzzleIndex) {
+    const config = LEVELS[categoryId];
+    if (!config) return `https://picsum.photos/seed/jm${categoryId}/540/540`;
+    
+    const images = window.LEVEL_IMAGES ? window.LEVEL_IMAGES[categoryId] : null;
+    if (images && images.length > puzzleIndex) {
+        return `/levels/${config.folder}/${encodeURIComponent(images[puzzleIndex])}`;
+    }
+
+    // Fallback
+    return `/levels/${config.folder}/1.png`;
+}
+
+// ── Piece Class ──
 class Piece {
-    constructor(id, col, row, width, height, imageUrl, totalCols, totalRows) {
+    constructor(id, col, row, width, height, imageUrl, totalCols, totalRows, imgW, imgH) {
         this.id = id;
-        this.col = col;
-        this.row = row;
+        this.correctCol = col;
+        this.correctRow = row;
+        this.currentCol = col;  // Will be shuffled
+        this.currentRow = row;
         this.width = width;
         this.height = height;
-        
-        // Correct position relative to top-left of the merged puzzle
+        this.groupId = null;
+
+        // Correct pixel position in solved puzzle
         this.correctX = col * width;
         this.correctY = row * height;
-        
-        // Current actual position on board
+
+        // Current pixel position (derived from grid)
         this.x = 0;
         this.y = 0;
-        
-        this.groupId = null;
-        
-        // DOM Element
+
+        // DOM
         this.el = document.createElement('div');
         this.el.className = 'piece-container';
         this.el.id = `piece-${id}`;
@@ -83,22 +275,23 @@ class Piece {
 
         this.inner = document.createElement('div');
         this.inner.className = 'piece-inner';
-        
+
         this.front = document.createElement('div');
         this.front.className = 'piece-front';
-        this.front.style.backgroundImage = `url(${imageUrl})`;
-        this.front.style.backgroundSize = `${totalCols * width}px ${totalRows * height}px`;
+        this.front.style.backgroundImage = `url("${imageUrl}")`;
+        // Use natural image dimensions for background-size — no scaling
+        this.front.style.backgroundSize = `${imgW}px ${imgH}px`;
         this.front.style.backgroundPosition = `-${this.correctX}px -${this.correctY}px`;
-        
+
         this.back = document.createElement('div');
         this.back.className = 'piece-back';
-        
+
         this.inner.appendChild(this.front);
         this.inner.appendChild(this.back);
         this.el.appendChild(this.inner);
-        
+
         BOARD.appendChild(this.el);
-        this.bindEvents();
+        this.el.addEventListener('pointerdown', handlePointerDown);
     }
 
     setPosition(x, y) {
@@ -107,119 +300,261 @@ class Piece {
         gsap.set(this.el, { x: this.x, y: this.y });
     }
 
-    bindEvents() {
-        this.el.addEventListener('pointerdown', handlePointerDown);
+    setGridPosition(col, row) {
+        this.currentCol = col;
+        this.currentRow = row;
+        this.setPosition(col * this.width, row * this.height);
+    }
+
+    animateToGrid(col, row, duration = 0.25) {
+        this.currentCol = col;
+        this.currentRow = row;
+        const tgtX = col * this.width;
+        const tgtY = row * this.height;
+        return gsap.to(this.el, {
+            x: tgtX, y: tgtY,
+            duration,
+            ease: 'power2.out',
+            onComplete: () => { this.x = tgtX; this.y = tgtY; }
+        });
     }
 }
 
-// Global Drag & Game State
-let draggingGroup = null; // ID of the group currently being dragged
-let dragOffsets = {}; // pieceId -> { dx, dy }
+// ── Drag State ──
+let draggingGroup = null;
+let dragOffsets = {};
 let startPointer = { x: 0, y: 0 };
 let isMemorizing = false;
+let boardRect = null;
 
-function initLevel(levelNum) {
+// ── Timer ──
+function startTimer() {
+    stopTimer();
+    timerSeconds = 0;
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+        timerSeconds++;
+        updateTimerDisplay();
+    }, 1000);
+}
+
+function stopTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+}
+
+function updateTimerDisplay() {
+    if (!TIMER_EL) return;
+    const m = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+    const s = (timerSeconds % 60).toString().padStart(2, '0');
+    TIMER_EL.textContent = `${m}:${s}`;
+}
+
+function updateMoveCount() {
+    if (MOVE_COUNT_EL) MOVE_COUNT_EL.textContent = moveCount;
+}
+
+// ── Grid Helpers ──
+function buildGrid(rows, cols) {
+    grid = [];
+    for (let r = 0; r < rows; r++) {
+        grid[r] = [];
+        for (let c = 0; c < cols; c++) {
+            grid[r][c] = null;
+        }
+    }
+}
+
+function getPieceAt(col, row) {
+    if (row < 0 || row >= gridRows || col < 0 || col >= gridCols) return null;
+    const pid = grid[row][col];
+    if (pid == null) return null;
+    return pieces.find(p => p.id === pid);
+}
+
+// ── Init Level ──
+function initLevel(categoryId, puzzleIndex) {
     WIN_OVERLAY.classList.add('hidden');
     BOARD.innerHTML = '';
     pieces = [];
     groups = {};
     nextGroupId = 1;
-    LEVEL_DISPLAY.innerText = levelNum;
-
-    const config = LEVELS[levelNum] || LEVELS[3];
-    const { rows, cols, image } = config;
+    moveCount = 0;
+    topZIndex = 10;
+    updateMoveCount();
     
-    // Base puzzle size maxing out at 600x400 to fit on screen
-    const puzzleWidth = 600;
-    const puzzleHeight = 400;
-    const pieceWidth = puzzleWidth / cols;
-    const pieceHeight = puzzleHeight / rows;
+    const puzzleName = getPuzzleName(categoryId, puzzleIndex);
+    LEVEL_DISPLAY.innerText = `Level ${categoryId} - ${puzzleName}`;
 
-    // Create pool of valid grid slots
-    let slots = [];
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-            slots.push({ x: c * pieceWidth, y: r * pieceHeight });
-        }
-    }
-    
-    // Shuffle slots
-    for (let i = slots.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [slots[i], slots[j]] = [slots[j], slots[i]];
+    const config = LEVELS[categoryId] || LEVELS[1];
+    gridRows = config.rows;
+    gridCols = config.cols;
+
+    const imageUrl = getSelectedImage(categoryId, puzzleIndex);
+
+    // Load image to get natural dimensions
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+        const imgW = img.naturalWidth;
+        const imgH = img.naturalHeight;
+        setupBoard(categoryId, config, imageUrl, imgW, imgH);
+    };
+    img.onerror = () => {
+        // Fallback: use default dimensions
+        setupBoard(categoryId, config, imageUrl, 540, 540);
+    };
+    img.src = imageUrl;
+}
+
+function setupBoard(levelNum, config, imageUrl, imgW, imgH) {
+    const { rows, cols } = config;
+
+    // Size the board to the image dimensions, capped to fit viewport
+    // Max board area: leave space for header and sidebar
+    const maxBoardW = 500;
+    const maxBoardH = 600;
+
+    let boardW = imgW;
+    let boardH = imgH;
+
+    // Scale down if needed to fit viewport, maintaining aspect ratio
+    if (boardW > maxBoardW || boardH > maxBoardH) {
+        const scaleW = maxBoardW / boardW;
+        const scaleH = maxBoardH / boardH;
+        const scale = Math.min(scaleW, scaleH);
+        boardW = Math.floor(boardW * scale);
+        boardH = Math.floor(boardH * scale);
     }
 
+    // Make board dimensions divisible by grid size
+    boardW = Math.floor(boardW / cols) * cols;
+    boardH = Math.floor(boardH / rows) * rows;
+
+    pieceW = boardW / cols;
+    pieceH = boardH / rows;
+
+    // Board sizing (add border)
+    const borderSize = 4;
+    BOARD.style.width = `${boardW + borderSize * 2}px`;
+    BOARD.style.height = `${boardH + borderSize * 2}px`;
+
+    // Set reference image
+    if (REF_IMAGE_EL) {
+        REF_IMAGE_EL.style.backgroundImage = `url("${imageUrl}")`;
+        REF_IMAGE_EL.style.backgroundSize = 'contain';
+        REF_IMAGE_EL.style.backgroundRepeat = 'no-repeat';
+        REF_IMAGE_EL.style.backgroundPosition = 'center';
+    }
+
+    buildGrid(rows, cols);
+
+    // Create all pieces
     let idCounter = 1;
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-            const piece = new Piece(idCounter, c, r, pieceWidth, pieceHeight, image, cols, rows);
-            
-            // Assign from shuffled slots
-            const slot = slots.pop();
-            
-            // Start pieces in their CORRECT solved positions for the Memorize phase
-            piece.setPosition(piece.correctX, piece.correctY);
-            
-            // Target slots for when the game actually starts
-            piece.targetX = slot.x;
-            piece.targetY = slot.y;
-            
-            // Show the front image initially
-            piece.inner.classList.add('flipped');
-            
-            // Initially, each piece is its own group
+            const piece = new Piece(
+                idCounter, c, r,
+                pieceW, pieceH,
+                imageUrl, cols, rows,
+                boardW, boardH  // Use board dimensions for backgroundSize
+            );
+
             const gId = nextGroupId++;
             piece.groupId = gId;
             groups[gId] = [piece.id];
-            
+
             pieces.push(piece);
             idCounter++;
         }
     }
-    
-    // Begin Memorize Phase
+
+    // Place pieces in correct positions for memorize phase
+    pieces.forEach(p => {
+        grid[p.correctRow][p.correctCol] = p.id;
+        p.setGridPosition(p.correctCol, p.correctRow);
+        p.el.style.zIndex = topZIndex;
+        p.inner.classList.add('flipped'); // Show image
+    });
+
+    // Memorize phase
     isMemorizing = true;
     const memorizeOverlay = document.getElementById('memorize-overlay');
     memorizeOverlay.classList.remove('hidden');
 
-    // Wait 3 seconds, then shatter and deal
     setTimeout(() => {
         memorizeOverlay.classList.add('hidden');
-        
+
+        // Shuffle pieces on the grid
+        shuffleGrid();
+
+        // Face-down first
+        pieces.forEach(p => p.inner.classList.remove('flipped'));
+
+        // Animate to shuffled positions
         const tl = gsap.timeline();
-        
-        // Face down (hide image) slightly before they move
-        tl.add(() => {
-            pieces.forEach(p => p.inner.classList.remove('flipped'));
+        pieces.forEach((piece, index) => {
+            tl.add(() => {
+                piece.animateToGrid(piece.currentCol, piece.currentRow, 0.3);
+                playSound('snap');
+            }, index * 0.04);
         });
 
-        pieces.forEach((piece, index) => {
-            tl.to(piece.el, {
-                x: piece.targetX,
-                y: piece.targetY,
-                duration: 0.4,
-                ease: "power2.out",
-                onComplete: () => {
-                    piece.setPosition(piece.targetX, piece.targetY);
-                    playSound('snap');
-                }
-            }, index * 0.05); // Fast, sequential scatter
-        });
-        
-        // Once all are distributed, flip them back over to begin the game
+        // Flip back and start game
         tl.add(() => {
             pieces.forEach(p => p.inner.classList.add('flipped'));
-            isMemorizing = false; // Unlock interactions
-        }, "+=0.2");
+            isMemorizing = false;
+            startTimer();
+        }, '+=0.3');
 
     }, 3000);
 }
 
+function shuffleGrid() {
+    // Fisher-Yates shuffle of grid positions
+    const positions = [];
+    for (let r = 0; r < gridRows; r++) {
+        for (let c = 0; c < gridCols; c++) {
+            positions.push({ col: c, row: r });
+        }
+    }
+
+    // Shuffle
+    for (let i = positions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [positions[i], positions[j]] = [positions[j], positions[i]];
+    }
+
+    // Ensure no piece is in its correct position (derangement)
+    // Simple check: if any piece would be in correct spot, swap with next
+    const pieceList = [...pieces];
+    for (let i = 0; i < pieceList.length; i++) {
+        const pos = positions[i];
+        if (pieceList[i].correctCol === pos.col && pieceList[i].correctRow === pos.row) {
+            // Swap with next (wrap around)
+            const swapIdx = (i + 1) % positions.length;
+            [positions[i], positions[swapIdx]] = [positions[swapIdx], positions[i]];
+        }
+    }
+
+    // Assign shuffled positions
+    buildGrid(gridRows, gridCols);
+    for (let i = 0; i < pieceList.length; i++) {
+        const p = pieceList[i];
+        const pos = positions[i];
+        p.currentCol = pos.col;
+        p.currentRow = pos.row;
+        grid[pos.row][pos.col] = p.id;
+    }
+}
+
+// ── Pointer Handlers ──
 function handlePointerDown(e) {
     if (isMemorizing) return;
-    if (e.button !== 0 && e.type !== 'touchstart') return; // Only left click or touch
-    
-    // We must find the closest piece-container because e.target might be the front/back card face
+    if (e.button !== 0 && e.type !== 'touchstart') return;
+
     const pieceEl = e.target.closest('.piece-container');
     if (!pieceEl) return;
 
@@ -227,26 +562,31 @@ function handlePointerDown(e) {
     const piece = pieces.find(p => p.id === pieceId);
     if (!piece) return;
 
-    // Elevate group
     draggingGroup = piece.groupId;
     const groupPieceIds = groups[draggingGroup];
     if (!groupPieceIds) return;
 
     playSound('drag');
 
-    // Record start pointer
+    topZIndex += 10; // increase significantly to ensure group is on top
+
+    // Cache board rect for coordinate conversion
+    boardRect = BOARD.getBoundingClientRect();
+
     startPointer.x = e.clientX;
     startPointer.y = e.clientY;
 
+    // Store each piece's original grid position and pixel offset from pointer
+    dragOffsets = {};
     groupPieceIds.forEach(id => {
         const p = pieces.find(p => p.id === id);
         p.el.classList.add('dragging');
-        p.el.style.zIndex = 1000;
-        
-        // Offset between current piece position and pointer
+        p.el.style.zIndex = topZIndex;
         dragOffsets[p.id] = {
-            dx: p.x - startPointer.x,
-            dy: p.y - startPointer.y
+            dx: p.x - (e.clientX - boardRect.left),
+            dy: p.y - (e.clientY - boardRect.top),
+            origCol: p.currentCol,
+            origRow: p.currentRow
         };
     });
 
@@ -258,16 +598,17 @@ function handlePointerDown(e) {
 function handlePointerMove(e) {
     if (!draggingGroup) return;
 
-    const pointerX = e.clientX;
-    const pointerY = e.clientY;
     const groupPieceIds = groups[draggingGroup];
+    const boardX = e.clientX - boardRect.left;
+    const boardY = e.clientY - boardRect.top;
 
-    // Unconstrained smooth dragging (no bounding constraints)
     groupPieceIds.forEach(id => {
         const p = pieces.find(p => p.id === id);
-        const propX = pointerX + dragOffsets[p.id].dx;
-        const propY = pointerY + dragOffsets[p.id].dy;
-        p.setPosition(propX, propY);
+        const propX = boardX + dragOffsets[p.id].dx;
+        const propY = boardY + dragOffsets[p.id].dy;
+        p.x = propX;
+        p.y = propY;
+        gsap.set(p.el, { x: propX, y: propY });
     });
 }
 
@@ -285,7 +626,7 @@ function handlePointerUp(e) {
     });
 
     handleDrop(draggingGroup);
-    
+
     draggingGroup = null;
     dragOffsets = {};
 }
@@ -293,290 +634,470 @@ function handlePointerUp(e) {
 function handleDrop(movedGroupId) {
     const movedPieceIds = groups[movedGroupId];
     const movedPieces = movedPieceIds.map(id => pieces.find(p => p.id === id));
-    
-    // Base drop calculation on the first piece of the group
     const primaryPiece = movedPieces[0];
-    
-    // The exact origin slot of primary piece before the drag started
-    const startX = startPointer.x + dragOffsets[primaryPiece.id].dx;
-    const startY = startPointer.y + dragOffsets[primaryPiece.id].dy;
-    const startCol = Math.round(startX / primaryPiece.width);
-    const startRow = Math.round(startY / primaryPiece.height);
 
-    // Where the primary piece is hovering over right now
-    const hoverCol = Math.round(primaryPiece.x / primaryPiece.width);
-    const hoverRow = Math.round(primaryPiece.y / primaryPiece.height);
+    // Where the primary piece is now (snap to nearest grid cell)
+    const hoverCol = Math.round(primaryPiece.x / pieceW);
+    const hoverRow = Math.round(primaryPiece.y / pieceH);
 
-    // Delta of the move
-    const colOff = hoverCol - startCol;
-    const rowOff = hoverRow - startRow;
-    
-    if (colOff === 0 && rowOff === 0) {
-        // Did not move a grid slot. Snap back to original slots.
+    const deltaCol = hoverCol - dragOffsets[primaryPiece.id].origCol;
+    const deltaRow = hoverRow - dragOffsets[primaryPiece.id].origRow;
+
+    if (deltaCol === 0 && deltaRow === 0) {
         bounceBack(movedPieces);
         return;
     }
 
-    const levelConfig = LEVELS[currentLevel] || LEVELS[3];
-    const maxCols = levelConfig.cols;
-    const maxRows = levelConfig.rows;
-
-    const dragSet = new Set(movedPieceIds);
-    let moves_map = [];
+    const moveMap = [];
+    const targetCells = [];
+    const originCells = [];
     
     for (const p of movedPieces) {
-        // Original slot of this piece
-        const oc = Math.round((startPointer.x + dragOffsets[p.id].dx) / p.width);
-        const or = Math.round((startPointer.y + dragOffsets[p.id].dy) / p.height);
-        
-        // Intended slot of this piece
-        const nc = oc + colOff;
-        const nr = or + rowOff;
+        const origCol = dragOffsets[p.id].origCol;
+        const origRow = dragOffsets[p.id].origRow;
+        const newCol = origCol + deltaCol;
+        const newRow = origRow + deltaRow;
 
-        if (nc < 0 || nc >= maxCols || nr < 0 || nr >= maxRows) {
-            // Out of bounds, abort move
+        // Bounds check
+        if (newCol < 0 || newCol >= gridCols || newRow < 0 || newRow >= gridRows) {
             bounceBack(movedPieces);
             return;
         }
-
-        moves_map.push({ piece: p, oc, or, nc, nr });
+        
+        moveMap.push({ piece: p, origCol, origRow, newCol, newRow });
+        targetCells.push({ col: newCol, row: newRow });
+        originCells.push({ col: origCol, row: origRow });
     }
 
-    // Now figure out what slots the group is trying to move into, and what slots it leaves behind
-    const newGridSpots = moves_map.map(m => `${m.nc},${m.nr}`);
-    const oldGridSpots = moves_map.map(m => `${m.oc},${m.or}`);
+    const newCellsSet = new Set(targetCells.map(c => `${c.col},${c.row}`));
+    const origCellsSet = new Set(originCells.map(c => `${c.col},${c.row}`));
 
-    const newGridSet = new Set(newGridSpots);
-
-    // Find pieces that currently occupy the slots we want to move into AND are not part of our moving group
     const displacedPieces = [];
-    newGridSpots.forEach(ns => {
-        const [c, r] = ns.split(',').map(Number);
-        const occupant = pieces.find(p => {
-             const pc = Math.round(p.x / p.width);
-             const pr = Math.round(p.y / p.height);
-             return pc === c && pr === r && !dragSet.has(p.id);
-        });
-        if (occupant) displacedPieces.push(occupant);
-    });
+    for (const cell of targetCells) {
+        const key = `${cell.col},${cell.row}`;
+        if (origCellsSet.has(key)) continue;
 
-    // Find the slots being abandoned by the group that won't be covered by another piece of the group
-    const freedSpots = oldGridSpots.filter(spot => !newGridSet.has(spot));
+        const occupant = getPieceAt(cell.col, cell.row);
+        if (occupant && !movedPieceIds.includes(occupant.id)) {
+            displacedPieces.push(occupant);
+        }
+    }
 
-    if (displacedPieces.length !== freedSpots.length) {
-        // Can't swap cleanly if it's not a 1:1 shape/size match
+    const freedCells = originCells.filter(c => !newCellsSet.has(`${c.col},${c.row}`));
+
+    if (displacedPieces.length !== freedCells.length) {
         bounceBack(movedPieces);
         return;
     }
 
-    playSound('snap');
-
-    // Execute the swap!
-    
-    // 1. Move the dragged pieces tracking to new grid slots
-    for (const m of moves_map) {
-        const tgtX = m.nc * m.piece.width;
-        const tgtY = m.nr * m.piece.height;
-        gsap.to(m.piece.el, { x: tgtX, y: tgtY, duration: 0.2, onComplete: () => m.piece.setPosition(tgtX, tgtY) });
+    // --- Atomic Grid Update ---
+    for (const m of moveMap) {
+        grid[m.origRow][m.origCol] = null;
+    }
+    for (const dp of displacedPieces) {
+        grid[dp.currentRow][dp.currentCol] = null;
     }
 
-    // 2. Move displaced pieces into freed slots
     for (let i = 0; i < displacedPieces.length; i++) {
         const dp = displacedPieces[i];
-        const [fc, fr] = freedSpots[i].split(',').map(Number);
-        const tgtX = fc * dp.width;
-        const tgtY = fr * dp.height;
-        gsap.to(dp.el, { x: tgtX, y: tgtY, duration: 0.2, onComplete: () => dp.setPosition(tgtX, tgtY) });
+        const fc = freedCells[i];
+        grid[fc.row][fc.col] = dp.id;
+        dp.animateToGrid(fc.col, fc.row, 0.2);
+        dp.el.style.zIndex = topZIndex - 1;
     }
 
-    // Check merges after animation
-    const affectedGroupIds = new Set();
-    affectedGroupIds.add(movedGroupId);
-    displacedPieces.forEach(p => affectedGroupIds.add(p.groupId));
-    
+    for (const m of moveMap) {
+        grid[m.newRow][m.newCol] = m.piece.id;
+        m.piece.animateToGrid(m.newCol, m.newRow, 0.2);
+    }
+
+    playSound('snap');
+    moveCount++;
+    updateMoveCount();
+
     setTimeout(() => {
-        affectedGroupIds.forEach(gid => checkMerges(gid));
-    }, 250);
+        checkAllMerges();
+    }, 280);
 }
 
-function bounceBack(movedPiecesObj) {
-    movedPiecesObj.forEach(mp => {
-        const origX = startPointer.x + dragOffsets[mp.id].dx;
-        const origY = startPointer.y + dragOffsets[mp.id].dy;
-        const sx = Math.round(origX / mp.width) * mp.width;
-        const sy = Math.round(origY / mp.height) * mp.height;
-        gsap.to(mp.el, { x: sx, y: sy, duration: 0.2, ease: "back.out(1.5)", onComplete: () => mp.setPosition(sx, sy) });
+function bounceBack(movedPieces) {
+    movedPieces.forEach(p => {
+        const origCol = dragOffsets[p.id] ? dragOffsets[p.id].origCol : p.currentCol;
+        const origRow = dragOffsets[p.id] ? dragOffsets[p.id].origRow : p.currentRow;
+        p.animateToGrid(origCol, origRow, 0.2);
     });
     playSound('drag');
 }
 
-function checkMerges(groupIdToCheck) {
-    if (!groups[groupIdToCheck]) return;
-    
-    const groupPieceIds = groups[groupIdToCheck];
-    const groupPiecesObj = groupPieceIds.map(id => pieces.find(p => p.id === id));
-    
-    let merged = false;
-    const otherGroupIds = Object.keys(groups).filter(gId => parseInt(gId) !== groupIdToCheck);
+// ── Merge Logic (Grid-Based) ──
+function checkAllMerges() {
+    let oldMergedCount = 0;
+    Object.values(groups).forEach(g => { if (g.length > 1) oldMergedCount += g.length; });
 
-    for (const targetGroupId of otherGroupIds) {
-        const targetPieceIds = groups[targetGroupId];
-        const targetPiecesObj = targetPieceIds.map(id => pieces.find(p => p.id === id));
+    // Reset all groups 
+    groups = {};
+    nextGroupId = 1;
+    pieces.forEach(p => {
+        p.groupId = nextGroupId++;
+        groups[p.groupId] = [p.id];
+    });
 
-        let matchFound = false;
+    // Rebuild groups based on current adjacency
+    let merged = true;
+    while (merged) {
+        merged = false;
+        for (let r = 0; r < gridRows; r++) {
+            for (let c = 0; c < gridCols; c++) {
+                const piece = getPieceAt(c, r);
+                if (!piece) continue;
 
-        for (const mp of groupPiecesObj) {
-            for (const tp of targetPiecesObj) {
-                // Logical correct offset in puzzle
-                const expectedOffsetX = mp.correctX - tp.correctX;
-                const expectedOffsetY = mp.correctY - tp.correctY;
-
-                // Actual current physical offset
-                const actualOffsetX = mp.x - tp.x;
-                const actualOffsetY = mp.y - tp.y;
-
-                // If physical and logical match closely (snapped adjacent relative position)
-                if (Math.abs(expectedOffsetX - actualOffsetX) < 5 && Math.abs(expectedOffsetY - actualOffsetY) < 5) {
-                    const colDiff = Math.abs(mp.col - tp.col);
-                    const rowDiff = Math.abs(mp.row - tp.row);
-                    if ((colDiff === 1 && rowDiff === 0) || (colDiff === 0 && rowDiff === 1)) {
-                        matchFound = true;
-                        break;
+                // Check right neighbor
+                if (c + 1 < gridCols) {
+                    const neighbor = getPieceAt(c + 1, r);
+                    if (neighbor && neighbor.groupId !== piece.groupId && shouldMerge(piece, neighbor)) {
+                        mergeGroupsSilent(piece.groupId, neighbor.groupId);
+                        merged = true;
+                    }
+                }
+                // Check bottom neighbor
+                if (r + 1 < gridRows) {
+                    const neighbor = getPieceAt(c, r + 1);
+                    if (neighbor && neighbor.groupId !== piece.groupId && shouldMerge(piece, neighbor)) {
+                        mergeGroupsSilent(piece.groupId, neighbor.groupId);
+                        merged = true;
                     }
                 }
             }
-            if (matchFound) break;
         }
+    }
 
-        if (matchFound) {
-            merged = true;
-            playSound('snap');
-            const targetGroupInt = parseInt(targetGroupId);
-            
-            groupPiecesObj.forEach(mp => {
-                // Flash the card face for visual feedback
-                mp.el.classList.add('merge-flash');
-                setTimeout(() => mp.el.classList.remove('merge-flash'), 400);
-                
-                mp.groupId = targetGroupInt;
-                if (!groups[targetGroupInt].includes(mp.id)) {
-                    groups[targetGroupInt].push(mp.id);
-                }
-            });
-            
-            delete groups[groupIdToCheck];
-            // Recursively check until no more merges occur in this chain
-            setTimeout(() => checkMerges(targetGroupInt), 100);
-            break; 
-        }
+    let newMergedCount = 0;
+    Object.values(groups).forEach(g => { if (g.length > 1) newMergedCount += g.length; });
+
+    if (newMergedCount > oldMergedCount) {
+        playSound('snap');
+        // brief flash on the newly snapped pieces isn't strictly necessary or could be tricky to isolate easily.
+        // We'll just rely on the sound. 
     }
 
     checkWinCondition();
 }
 
+function shouldMerge(pieceA, pieceB) {
+    const currentDeltaCol = pieceB.currentCol - pieceA.currentCol;
+    const currentDeltaRow = pieceB.currentRow - pieceA.currentRow;
+
+    const correctDeltaCol = pieceB.correctCol - pieceA.correctCol;
+    const correctDeltaRow = pieceB.correctRow - pieceA.correctRow;
+
+    return currentDeltaCol === correctDeltaCol && currentDeltaRow === correctDeltaRow;
+}
+
+function mergeGroupsSilent(groupIdA, groupIdB) {
+    if (groupIdA === groupIdB) return;
+    if (!groups[groupIdA] || !groups[groupIdB]) return;
+
+    // Merge B into A
+    const piecesB = groups[groupIdB].map(id => pieces.find(p => p.id === id));
+    piecesB.forEach(p => {
+        p.groupId = groupIdA;
+        if (!groups[groupIdA].includes(p.id)) {
+            groups[groupIdA].push(p.id);
+        }
+    });
+
+    delete groups[groupIdB];
+}
+
 function checkWinCondition() {
     setTimeout(() => {
-        // If there's only 1 group left, and it has all pieces, Win!
         const remainingGroups = Object.keys(groups);
         if (remainingGroups.length === 1) {
             const finalGroup = groups[remainingGroups[0]];
             if (finalGroup.length === pieces.length) {
+                stopTimer();
                 playSound('win');
+                
+                // Update win card stats
+                const winMoves = document.getElementById('win-moves');
+                if (winMoves) winMoves.textContent = moveCount;
+                
                 WIN_OVERLAY.classList.remove('hidden');
-                // Premium win effects
-                gsap.fromTo('.win-modal', { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: "back.out(1.7)" });
+                gsap.fromTo('.win-modal', { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.7)' });
+                
+                if (!confetti) confetti = new ConfettiSystem(document.getElementById('confetti-canvas'));
+                confetti.burst(120);
             }
         }
-    }, 200); // slight delay to allow snap animation to finish
+    }, 200);
 }
 
-// Screen Routing Elements
+// ── Screen Routing ──
 const MAIN_MENU = document.getElementById('main-menu');
 const GAME_HEADER = document.getElementById('game-header');
 const LEVEL_SELECT = document.getElementById('level-select-screen');
+const CATEGORY_GRID = document.getElementById('category-grid');
+const PUZZLE_GRID = document.getElementById('puzzle-grid');
+const GAME_AREA = document.getElementById('game-area');
 
-// Logic for advancing levels (called from WinOverlay)
 NEXT_BTN.addEventListener('click', () => {
-    if (currentLevel === unlockedLevel) {
-        unlockedLevel++;
-        generateLevelGrid();
+    playSound('click');
+    let nextPuzzle = currentPuzzleIndex + 1;
+    
+    // Check if we reached the end of the category
+    const images = window.LEVEL_IMAGES ? window.LEVEL_IMAGES[currentCategory] : null;
+    const maxPuzzles = images ? images.length : 20;
+    
+    if (nextPuzzle >= maxPuzzles) {
+        currentCategory++;
+        nextPuzzle = 0;
+        if (currentCategory > Object.keys(LEVELS).length) {
+            currentCategory = 1;
+            showCategorySelect(); // reached end of game
+            return;
+        }
     }
-    currentLevel++;
-    if (currentLevel > Object.keys(LEVELS).length) {
-        // Just for demo, loop back to start if we exceed max levels
-        currentLevel = 1; 
-    }
-    initLevel(currentLevel);
+    
+    currentPuzzleIndex = nextPuzzle;
+    if (currentCategory > unlockedLevel) unlockedLevel = currentCategory;
+    
+    showGame();
+    setTimeout(() => initLevel(currentCategory, currentPuzzleIndex), 100);
 });
 
-// Routing Functions
 function showMainMenu() {
     MAIN_MENU.classList.remove('hidden');
     GAME_HEADER.classList.add('hidden');
     BOARD.classList.add('hidden');
     LEVEL_SELECT.classList.add('hidden');
     WIN_OVERLAY.classList.add('hidden');
+    if (GAME_AREA) GAME_AREA.classList.add('hidden');
+    stopTimer();
 }
 
-function showLevelSelect() {
+function showCategorySelect() {
     MAIN_MENU.classList.add('hidden');
     GAME_HEADER.classList.add('hidden');
     BOARD.classList.add('hidden');
     LEVEL_SELECT.classList.remove('hidden');
-    generateLevelGrid();
+    if (GAME_AREA) GAME_AREA.classList.add('hidden');
+    
+    document.getElementById('level-screen-title').innerText = 'LEVELS';
+    document.getElementById('level-screen-subtitle').style.display = 'none';
+    
+    PUZZLE_GRID.classList.add('hidden');
+    CATEGORY_GRID.classList.remove('hidden');
+    
+    generateCategoryGrid();
 }
 
-// Generate Level Grid dynamically
-function generateLevelGrid() {
-    const grid = document.getElementById('level-grid');
-    grid.innerHTML = '';
-    
-    // We assume 10 levels exist for progression purposes
-    for (let i = 1; i <= 10; i++) {
+function showGame() {
+    MAIN_MENU.classList.add('hidden');
+    LEVEL_SELECT.classList.add('hidden');
+    GAME_HEADER.classList.remove('hidden');
+    BOARD.classList.remove('hidden');
+    if (GAME_AREA) GAME_AREA.classList.remove('hidden');
+}
+
+// ── Level Grids ──
+function generateCategoryGrid() {
+    CATEGORY_GRID.innerHTML = '';
+    const totalLevels = Object.keys(LEVELS).length;
+
+    for (let i = 1; i <= totalLevels; i++) {
         const btn = document.createElement('button');
         btn.className = 'wood-btn level-btn';
-        const lockSvg = `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`;
-        const starSvgMini = `<svg class="icon-svg" viewBox="0 0 24 24" fill="var(--yellow-star)" stroke="var(--wood-dark)" stroke-width="2" stroke-linejoin="round" style="width: 14px; height: 14px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+
+        const config = LEVELS[i];
+        const sizeLabel = `${config.rows}×${config.cols}`;
         
+        // Check puzzle count
+        const images = window.LEVEL_IMAGES ? window.LEVEL_IMAGES[i] : null;
+        const count = images ? images.length : 20;
+
+        const lockSvg = `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`;
+
         if (i > unlockedLevel) {
             btn.classList.add('locked');
-            btn.innerHTML = `<span>${i}</span><span class="stars-mini" style="margin-top:2px">${lockSvg}</span>`;
+            btn.innerHTML = `<span>Level ${i}</span><span class="level-size">${sizeLabel}</span><span class="stars-mini">${lockSvg}</span>`;
         } else {
-            // Check if level has stars (mocked as 3 for unlocked past levels)
-            const stars = i < unlockedLevel ? `<div style="display:flex; gap:2px;">${starSvgMini}${starSvgMini}${starSvgMini}</div>` : '';
-            btn.innerHTML = `<span>${i}</span><span class="stars-mini">${stars}</span>`;
-            btn.addEventListener('click', () => {
-                currentLevel = i;
-                LEVEL_SELECT.classList.add('hidden');
-                GAME_HEADER.classList.remove('hidden');
-                BOARD.classList.remove('hidden');
-                setTimeout(() => initLevel(currentLevel), 100);
-            });
+            btn.innerHTML = `<span>Level ${i}</span><span class="level-size">${sizeLabel}</span><span class="stars-mini">${count} Puzzles</span>`;
+            btn.addEventListener('click', () => showPuzzleSelect(i));
         }
-        grid.appendChild(btn);
+        CATEGORY_GRID.appendChild(btn);
     }
 }
 
-// Main Menu Buttons
+function showPuzzleSelect(categoryId) {
+    document.getElementById('level-screen-title').innerText = `LEVEL ${categoryId}`;
+    document.getElementById('level-screen-subtitle').style.display = 'block';
+    
+    CATEGORY_GRID.classList.add('hidden');
+    PUZZLE_GRID.classList.remove('hidden');
+    
+    generatePuzzleGrid(categoryId);
+}
+
+// ── UI Wiring ──
+
+// Sound & Volume Toggles
+const soundToggleMenu = document.getElementById('sound-toggle-menu');
+const soundToggleGame = document.getElementById('sound-toggle-game');
+const volumeSliderMenu = document.getElementById('volume-slider-menu');
+const volumeSliderGame = document.getElementById('volume-slider-game');
+let isMuted = false;
+
+function toggleMute(e) {
+    // prevent clicking volume slider from triggering mute
+    if (e.target.tagName.toLowerCase() === 'input') return;
+    
+    isMuted = !isMuted;
+    soundEngine.enabled = !isMuted;
+    
+    // Update icons
+    const iconState = isMuted 
+        ? `<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>`
+        : `<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>`;
+        
+    if (soundToggleMenu) document.getElementById('sound-icon-menu').innerHTML = iconState;
+    if (soundToggleGame) document.getElementById('sound-icon-game').innerHTML = iconState;
+}
+
+if (soundToggleMenu) soundToggleMenu.addEventListener('click', (e) => { toggleMute(e); playSound('click'); });
+if (soundToggleGame) soundToggleGame.addEventListener('click', (e) => { toggleMute(e); playSound('click'); });
+
+function updateVolume(e) {
+    const val = e.target.value;
+    soundEngine.sfxVolume = parseFloat(val);
+    if (volumeSliderMenu && e.target !== volumeSliderMenu) volumeSliderMenu.value = val;
+    if (volumeSliderGame && e.target !== volumeSliderGame) volumeSliderGame.value = val;
+}
+
+if (volumeSliderMenu) volumeSliderMenu.addEventListener('input', updateVolume);
+if (volumeSliderGame) volumeSliderGame.addEventListener('input', updateVolume);
+
+// Shop
+const openShopBtn = document.getElementById('open-shop');
+const closeShopBtn = document.getElementById('close-shop-btn');
+const shopOverlay = document.getElementById('shop-overlay');
+
+if (openShopBtn && shopOverlay) {
+    openShopBtn.addEventListener('click', () => {
+        playSound('click');
+        shopOverlay.classList.remove('hidden');
+    });
+}
+if (closeShopBtn && shopOverlay) {
+    closeShopBtn.addEventListener('click', () => {
+        playSound('click');
+        shopOverlay.classList.add('hidden');
+    });
+}
+
+// Powerups (UI Only)
+['btn-hint', 'btn-freeze', 'btn-autosolve'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) {
+        btn.addEventListener('click', () => {
+            playSound('click');
+            alert('Power-ups coming soon!');
+        });
+    }
+});
+
+// Update Menu button bindings
+const homeBtn = document.getElementById('home-btn');
+if (homeBtn) {
+    homeBtn.addEventListener('click', () => {
+        playSound('click');
+        showMainMenu();
+    });
+}
+
+const pauseBtn = document.getElementById('pause-btn');
+if (pauseBtn) {
+    pauseBtn.addEventListener('click', () => {
+        playSound('click');
+        showCategorySelect();
+    });
+}
+
+const backToMainBtn = document.getElementById('back-to-main-btn');
+// Overriding old behavior
+if (backToMainBtn) {
+    backToMainBtn.removeEventListener('click', showMainMenu);
+    backToMainBtn.addEventListener('click', () => {
+        playSound('click');
+        if (!PUZZLE_GRID.classList.contains('hidden')) {
+            showCategorySelect();
+        } else {
+            showMainMenu();
+        }
+    });
+}
+
+
+function generatePuzzleGrid(categoryId) {
+    PUZZLE_GRID.innerHTML = '';
+    
+    const images = window.LEVEL_IMAGES ? window.LEVEL_IMAGES[categoryId] : null;
+    const maxPuzzles = images ? images.length : 0;
+    
+    if (maxPuzzles === 0) {
+        PUZZLE_GRID.innerHTML = '<p class="wood-text" style="grid-column: 1/-1; text-align: center;">No puzzles found in this level.</p>';
+        return;
+    }
+
+    const config = LEVELS[categoryId];
+
+    for (let i = 0; i < maxPuzzles; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'wood-btn level-btn puzzle-btn';
+        
+        const puzzleName = getPuzzleName(categoryId, i);
+        // Small thumbnail of the puzzle image
+        const imgUrl = `/levels/${config.folder}/${encodeURIComponent(images[i])}`;
+
+        btn.innerHTML = `
+            <div style="width: 100%; height: 60px; background-image: url('${imgUrl}'); background-size: cover; background-position: center; border-radius: 6px; margin-bottom: 8px;"></div>
+            <span style="font-size: 14px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; width: 100%; text-align: center;">${puzzleName}</span>
+        `;
+        
+        btn.addEventListener('click', () => {
+            currentCategory = categoryId;
+            currentPuzzleIndex = i;
+            showGame();
+            setTimeout(() => initLevel(categoryId, i), 100);
+        });
+        
+        PUZZLE_GRID.appendChild(btn);
+    }
+}
+
+// ── Menu Button Handlers ──
 const START_BTN = document.getElementById('start-btn');
-START_BTN.addEventListener('click', showLevelSelect);
+START_BTN.addEventListener('click', showCategorySelect);
 
-document.getElementById('back-to-main-btn').addEventListener('click', showMainMenu);
+document.getElementById('back-to-main-btn').addEventListener('click', () => {
+    // If we are looking at puzzles, go back to categories
+    if (!PUZZLE_GRID.classList.contains('hidden')) {
+        showCategorySelect();
+    } else {
+        showMainMenu();
+    }
+});
 
-// Pause / Home Button in-game
 document.getElementById('pause-btn').addEventListener('click', () => {
-    // Basic pause behavior: just return to Level Select
-    BOARD.innerHTML = ''; // Clear ongoing game
-    showLevelSelect();
+    BOARD.innerHTML = '';
+    stopTimer();
+    showCategorySelect();
 });
 
 // Modals
 const SETTINGS_MODAL = document.getElementById('settings-overlay');
 const SHOP_MODAL = document.getElementById('shop-overlay');
 
-// All Shop buttons (there might be multiple if we added one to the Header later)
-// main-menu bottom bar children (excluding the gear)
-const uiBtns = document.querySelectorAll('.menu-bottom button'); 
+const uiBtns = document.querySelectorAll('.menu-bottom button');
 uiBtns.forEach(btn => {
     if (btn.innerText === 'SHOP') {
         btn.addEventListener('click', () => SHOP_MODAL.classList.remove('hidden'));
@@ -586,7 +1107,6 @@ document.getElementById('close-shop-btn').addEventListener('click', () => {
     SHOP_MODAL.classList.add('hidden');
 });
 
-// Settings buttons (Main menu)
 const settingsBtn = document.getElementById('settings-btn');
 if (settingsBtn) {
     settingsBtn.addEventListener('click', () => SETTINGS_MODAL.classList.remove('hidden'));
@@ -595,13 +1115,13 @@ document.getElementById('close-settings-btn').addEventListener('click', () => {
     SETTINGS_MODAL.classList.add('hidden');
 });
 
-// Settings Sound Toggle
+// Sound Toggle
 const toggleSoundBtn = document.getElementById('toggle-sound-btn');
 toggleSoundBtn.addEventListener('click', () => {
     isMuted = !isMuted;
     toggleSoundBtn.innerText = isMuted ? 'SOUND: OFF' : 'SOUND: ON';
-    if (!isMuted) playSound('snap'); // Audio feedback
+    if (!isMuted) playSound('snap');
 });
 
-// Initialize on load
+// ── Initialize ──
 showMainMenu();
