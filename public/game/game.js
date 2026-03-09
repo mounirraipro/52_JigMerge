@@ -248,7 +248,7 @@ function getSelectedImage(categoryId, puzzleIndex) {
 
 // ── Piece Class ──
 class Piece {
-    constructor(id, col, row, width, height, imageUrl, totalCols, totalRows, imgW, imgH) {
+    constructor(id, col, row, width, height, imageUrl, backImageUrl, totalCols, totalRows, imgW, imgH) {
         this.id = id;
         this.correctCol = col;
         this.correctRow = row;
@@ -285,6 +285,9 @@ class Piece {
 
         this.back = document.createElement('div');
         this.back.className = 'piece-back';
+        this.back.style.backgroundImage = `url("${backImageUrl}")`;
+        this.back.style.backgroundSize = 'cover';
+        this.back.style.backgroundPosition = 'center';
 
         this.inner.appendChild(this.front);
         this.inner.appendChild(this.back);
@@ -455,10 +458,15 @@ function setupBoard(levelNum, config, imageUrl, imgW, imgH) {
     let idCounter = 1;
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
+            const redBack = 'Assets/jigmerge_back_card_red.png';
+            const blueBack = 'Assets/jigmerge_back_card_blue.png';
+            const backImageUrl = (r + c) % 2 === 0 ? redBack : blueBack;
+
             const piece = new Piece(
                 idCounter, c, r,
                 pieceW, pieceH,
-                imageUrl, cols, rows,
+                imageUrl, backImageUrl,
+                cols, rows,
                 boardW, boardH  // Use board dimensions for backgroundSize
             );
 
@@ -493,21 +501,24 @@ function setupBoard(levelNum, config, imageUrl, imgW, imgH) {
         // Face-down first
         pieces.forEach(p => p.inner.classList.remove('flipped'));
 
-        // Animate to shuffled positions
-        const tl = gsap.timeline();
-        pieces.forEach((piece, index) => {
-            tl.add(() => {
-                piece.animateToGrid(piece.currentCol, piece.currentRow, 0.3);
-                playSound('snap');
-            }, index * 0.04);
-        });
+        // Wait 2s before starting shuffle animation
+        setTimeout(() => {
+            // Animate to shuffled positions
+            const tl = gsap.timeline();
+            pieces.forEach((piece, index) => {
+                tl.add(() => {
+                    piece.animateToGrid(piece.currentCol, piece.currentRow, 0.3);
+                    playSound('snap');
+                }, index * 0.04);
+            });
 
-        // Flip back and start game
-        tl.add(() => {
-            pieces.forEach(p => p.inner.classList.add('flipped'));
-            isMemorizing = false;
-            startTimer();
-        }, '+=0.3');
+            // Flip back and start game
+            tl.add(() => {
+                pieces.forEach(p => p.inner.classList.add('flipped'));
+                isMemorizing = false;
+                startTimer();
+            }, '+=0.3');
+        }, 2000);
 
     }, 3000);
 }

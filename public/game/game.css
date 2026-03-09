@@ -719,7 +719,7 @@ body {
 
 /* Card Backs — Clean flat style */
 .piece-back {
-    background: linear-gradient(135deg, var(--wood-main), var(--wood-deeper));
+    background: #2c1a0f;
     border: 1px solid rgba(140, 66, 18, 0.4);
     border-radius: 0;
     display: flex;
@@ -730,6 +730,8 @@ body {
     position: relative;
     overflow: hidden;
     box-shadow: none;
+    background-size: cover;
+    background-position: center;
 }
 
 /* Subtle pattern on card back instead of star */
