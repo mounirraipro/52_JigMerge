@@ -919,9 +919,21 @@ function generateCategoryGrid() {
 
         if (i > unlockedLevel) {
             btn.classList.add('locked');
-            btn.innerHTML = `<span>Level ${i}</span><span class="level-size">${sizeLabel}</span><span class="stars-mini">${lockSvg}</span>`;
+            btn.innerHTML = `
+                <div style="width: 100%; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; background-color: rgba(0,0,0,0.1); border-radius: 6px; margin-bottom: 4px;">
+                    ${lockSvg}
+                </div>
+                <span style="font-size: 14px; letter-spacing: 0;">Level ${i}</span>
+                <span class="level-size" style="font-size: 10px; letter-spacing: 0;">${sizeLabel}</span>
+            `;
         } else {
-            btn.innerHTML = `<span>Level ${i}</span><span class="level-size">${sizeLabel}</span><span class="stars-mini">${count} Puzzles</span>`;
+            const firstImgUrl = images && images.length > 0 ? `/levels/${config.folder}/${encodeURIComponent(images[0])}` : '';
+            const imgStyle = firstImgUrl ? `background-image: url('${firstImgUrl}'); background-size: contain; background-repeat: no-repeat; background-position: center; border-radius: 6px; width: 100%; flex: 1; min-height: 0; margin-bottom: 4px;` : `width: 100%; flex: 1; min-height: 0; background-color: rgba(0,0,0,0.1); border-radius: 6px; margin-bottom: 4px;`;
+            btn.innerHTML = `
+                <div style="${imgStyle}"></div>
+                <span style="font-size: 14px; letter-spacing: 0;">Level ${i}</span>
+                <span class="stars-mini" style="font-size: 10px; letter-spacing: 0; margin-bottom: 0;">${count} Puzzles</span>
+            `;
             btn.addEventListener('click', () => showPuzzleSelect(i));
         }
         CATEGORY_GRID.appendChild(btn);
@@ -1059,8 +1071,8 @@ function generatePuzzleGrid(categoryId) {
         const imgUrl = `/levels/${config.folder}/${encodeURIComponent(images[i])}`;
 
         btn.innerHTML = `
-            <div style="width: 100%; height: 60px; background-image: url('${imgUrl}'); background-size: cover; background-position: center; border-radius: 6px; margin-bottom: 8px;"></div>
-            <span style="font-size: 14px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; width: 100%; text-align: center;">${puzzleName}</span>
+            <div style="width: 100%; flex: 1; min-height: 0; background-image: url('${imgUrl}'); background-size: contain; background-repeat: no-repeat; background-position: center; border-radius: 6px; margin-bottom: 6px;"></div>
+            <span style="font-size: 14px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; width: 100%; text-align: center; letter-spacing: 0;">${puzzleName}</span>
         `;
         
         btn.addEventListener('click', () => {
