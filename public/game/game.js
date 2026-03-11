@@ -11,6 +11,19 @@ const WIN_OVERLAY = document.getElementById('win-overlay');
 const MOVE_COUNT_EL = document.getElementById('move-count');
 const TIMER_EL = document.getElementById('timer-display');
 const REF_IMAGE_EL = document.getElementById('ref-image');
+const MODE_DISPLAY_EL = document.getElementById('mode-display');
+const COIN_AMOUNT_EL = document.getElementById('coin-amount');
+const COINS_TOTAL_GAME_EL = document.getElementById('coins-total-game');
+const WIN_TIME_EL = document.getElementById('win-time');
+const WIN_COINS_EL = document.getElementById('win-coins');
+const WIN_BONUS_LINE_EL = document.getElementById('win-bonus-line');
+const WIN_STARS_EL = document.getElementById('win-stars');
+const MERGE_STATUS_EL = document.getElementById('merge-status');
+const MERGE_FEEDBACK_EL = document.getElementById('merge-feedback');
+const BEST_STARS_EL = document.getElementById('best-stars');
+const BEST_TIME_EL = document.getElementById('best-time');
+const SHOP_GRID_EL = document.getElementById('shop-grid');
+const SIDEBAR_TABS = document.querySelectorAll('.sidebar-tab');
 
 // ── Game Config ──
 let currentCategory = 1;
@@ -30,6 +43,404 @@ let moveCount = 0;
 let timerSeconds = 0;
 let timerInterval = null;
 let topZIndex = 10;
+let isZenMode = false;
+let isPeekActive = false;
+let peekTimeout = null;
+let mergeFeedbackTimeout = null;
+
+const THEMES = [
+    {
+        id: 'cozy-hearth',
+        name: 'Cozy Hearth',
+        price: 0,
+        note: 'Warm carved wood and candlelight.',
+        tokens: {
+            '--theme-bg': '#2a1b14',
+            '--theme-bg-soft': '#432b20',
+            '--theme-surface': '#5a3927',
+            '--theme-surface-2': 'rgba(255, 248, 239, 0.08)',
+            '--theme-panel': 'rgba(50, 32, 23, 0.88)',
+            '--theme-panel-2': 'rgba(28, 18, 13, 0.68)',
+            '--theme-wood-light': '#d7ab77',
+            '--theme-wood-main': '#a56a3f',
+            '--theme-wood-dark': '#5b3825',
+            '--theme-accent': '#e8bf73',
+            '--theme-accent-2': '#c97e4b',
+            '--theme-success': '#85b67d',
+            '--theme-star': '#f3d48b',
+            '--theme-text': '#fff8ef',
+            '--theme-text-soft': 'rgba(255, 248, 239, 0.72)',
+            '--theme-text-dim': 'rgba(255, 248, 239, 0.45)',
+            '--theme-border': 'rgba(232, 191, 115, 0.24)',
+            '--theme-border-strong': 'rgba(232, 191, 115, 0.44)',
+        },
+    },
+    {
+        id: 'mossy-lodge',
+        name: 'Mossy Lodge',
+        price: 45,
+        note: 'Softer greens and pine wood for a forest nook.',
+        tokens: {
+            '--theme-bg': '#1e241d',
+            '--theme-bg-soft': '#324034',
+            '--theme-surface': '#495441',
+            '--theme-surface-2': 'rgba(242, 246, 236, 0.08)',
+            '--theme-panel': 'rgba(28, 34, 27, 0.9)',
+            '--theme-panel-2': 'rgba(22, 27, 21, 0.72)',
+            '--theme-wood-light': '#bfa883',
+            '--theme-wood-main': '#7a6147',
+            '--theme-wood-dark': '#433428',
+            '--theme-accent': '#b8cd8c',
+            '--theme-accent-2': '#8fa56e',
+            '--theme-success': '#8fc28c',
+            '--theme-star': '#e8d69a',
+            '--theme-text': '#f4f0e6',
+            '--theme-text-soft': 'rgba(244, 240, 230, 0.72)',
+            '--theme-text-dim': 'rgba(244, 240, 230, 0.45)',
+            '--theme-border': 'rgba(184, 205, 140, 0.24)',
+            '--theme-border-strong': 'rgba(184, 205, 140, 0.4)',
+        },
+    },
+    {
+        id: 'dawn-parlor',
+        name: 'Dawn Parlor',
+        price: 70,
+        note: 'Rosy paper walls with creamy maple trim.',
+        tokens: {
+            '--theme-bg': '#302121',
+            '--theme-bg-soft': '#53393a',
+            '--theme-surface': '#6f5149',
+            '--theme-surface-2': 'rgba(255, 243, 239, 0.09)',
+            '--theme-panel': 'rgba(55, 37, 34, 0.9)',
+            '--theme-panel-2': 'rgba(36, 24, 22, 0.72)',
+            '--theme-wood-light': '#d6b199',
+            '--theme-wood-main': '#a97962',
+            '--theme-wood-dark': '#65483d',
+            '--theme-accent': '#f1bf9c',
+            '--theme-accent-2': '#d79071',
+            '--theme-success': '#93ba9f',
+            '--theme-star': '#f3dcb0',
+            '--theme-text': '#fff5f0',
+            '--theme-text-soft': 'rgba(255, 245, 240, 0.74)',
+            '--theme-text-dim': 'rgba(255, 245, 240, 0.45)',
+            '--theme-border': 'rgba(241, 191, 156, 0.24)',
+            '--theme-border-strong': 'rgba(241, 191, 156, 0.44)',
+        },
+    },
+];
+
+const STORAGE_KEY = 'jigmerge_progress_v2';
+const defaultProgress = {
+    coins: 0,
+    unlockedLevel: 1,
+    zenMode: false,
+    activeTheme: 'cozy-hearth',
+    ownedThemes: ['cozy-hearth'],
+    lastPlayed: { category: 1, puzzleIndex: 0 },
+    bestScores: {},
+};
+
+let playerProgress = loadProgress();
+unlockedLevel = playerProgress.unlockedLevel || 1;
+isZenMode = !!playerProgress.zenMode;
+
+function loadProgress() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return { ...defaultProgress };
+        const parsed = JSON.parse(raw);
+        return {
+            ...defaultProgress,
+            ...parsed,
+            ownedThemes: parsed.ownedThemes || ['cozy-hearth'],
+            lastPlayed: {
+                ...defaultProgress.lastPlayed,
+                ...(parsed.lastPlayed || {}),
+            },
+            bestScores: parsed.bestScores || {},
+        };
+    } catch (error) {
+        console.warn('Failed to load progress', error);
+        return { ...defaultProgress };
+    }
+}
+
+function saveProgress() {
+    playerProgress.unlockedLevel = unlockedLevel;
+    playerProgress.zenMode = isZenMode;
+    playerProgress.lastPlayed = { category: currentCategory, puzzleIndex: currentPuzzleIndex };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(playerProgress));
+}
+
+function getTheme(themeId) {
+    return THEMES.find((theme) => theme.id === themeId) || THEMES[0];
+}
+
+function applyTheme(themeId) {
+    const theme = getTheme(themeId);
+    Object.entries(theme.tokens).forEach(([key, value]) => {
+        document.documentElement.style.setProperty(key, value);
+    });
+    playerProgress.activeTheme = theme.id;
+    saveProgress();
+}
+
+function isThemeOwned(themeId) {
+    return playerProgress.ownedThemes.includes(themeId);
+}
+
+function purchaseTheme(themeId) {
+    const theme = getTheme(themeId);
+    if (isThemeOwned(theme.id)) {
+        applyTheme(theme.id);
+        renderShop();
+        return;
+    }
+    if (playerProgress.coins < theme.price) return;
+    playerProgress.coins -= theme.price;
+    playerProgress.ownedThemes.push(theme.id);
+    updateCoinDisplays();
+    applyTheme(theme.id);
+    renderShop();
+}
+
+function puzzleKey(categoryId, puzzleIndex) {
+    return `${categoryId}:${puzzleIndex}`;
+}
+
+function getBestScore(categoryId, puzzleIndex) {
+    return playerProgress.bestScores[puzzleKey(categoryId, puzzleIndex)] || null;
+}
+
+function updateCoinDisplays() {
+    if (COIN_AMOUNT_EL) COIN_AMOUNT_EL.textContent = playerProgress.coins;
+    if (COINS_TOTAL_GAME_EL) COINS_TOTAL_GAME_EL.textContent = playerProgress.coins;
+}
+
+function updateModeLabels() {
+    const modeLabel = isZenMode ? 'Zen' : 'Flow';
+    if (MODE_DISPLAY_EL) MODE_DISPLAY_EL.textContent = modeLabel;
+
+    const zenLabel = `ZEN MODE: ${isZenMode ? 'ON' : 'OFF'}`;
+    const zenStatus = document.getElementById('zen-status');
+    const menuBtn = document.getElementById('zen-toggle-menu');
+    const settingsBtn = document.getElementById('toggle-zen-btn');
+    if (zenStatus) zenStatus.textContent = isZenMode ? 'ON' : 'OFF';
+    if (menuBtn) menuBtn.textContent = zenLabel;
+    if (settingsBtn) settingsBtn.textContent = zenLabel;
+}
+
+function formatTime(totalSeconds) {
+    const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+    const s = (totalSeconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+}
+
+function getLevelPar(categoryId) {
+    const config = LEVELS[categoryId] || LEVELS[1];
+    const cells = config.rows * config.cols;
+    return {
+        speed: Math.max(35, Math.round(cells * 4.5)),
+        great: Math.max(55, Math.round(cells * 6.5)),
+        relaxed: Math.max(90, Math.round(cells * 9)),
+        moveTarget: Math.max(cells + 2, Math.round(cells * 1.8)),
+    };
+}
+
+function getCollectionCompletion() {
+    const total = Object.values(window.LEVEL_IMAGES || {}).reduce((sum, list) => sum + list.length, 0);
+    const completed = Object.keys(playerProgress.bestScores).length;
+    if (!total) return '0%';
+    return `${Math.round((completed / total) * 100)}%`;
+}
+
+function updateCollectionProgress() {
+    const progressEl = document.getElementById('collection-progress');
+    if (progressEl) progressEl.textContent = getCollectionCompletion();
+}
+
+function updateBestScorePanel(categoryId, puzzleIndex) {
+    const best = getBestScore(categoryId, puzzleIndex);
+    if (BEST_STARS_EL) BEST_STARS_EL.textContent = best ? `${'★'.repeat(best.stars)}${'☆'.repeat(3 - best.stars)}` : 'New';
+    if (BEST_TIME_EL) BEST_TIME_EL.textContent = best && best.bestTime > 0 ? formatTime(best.bestTime) : '--:--';
+}
+
+function renderShop() {
+    if (!SHOP_GRID_EL) return;
+    SHOP_GRID_EL.innerHTML = '';
+    THEMES.forEach((theme) => {
+        const owned = isThemeOwned(theme.id);
+        const active = playerProgress.activeTheme === theme.id;
+        const card = document.createElement('article');
+        card.className = 'shop-item';
+        const previewStyle = Object.entries(theme.tokens)
+            .map(([key, value]) => `${key}:${value}`)
+            .join(';');
+        card.innerHTML = `
+            <div class="shop-item-preview" style="${previewStyle}; background:
+                radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--theme-accent) 40%, transparent) 0%, transparent 32%),
+                linear-gradient(180deg, var(--theme-bg-soft), var(--theme-bg));"></div>
+            <div class="shop-item-meta">
+                <strong>${theme.name}</strong>
+                <span class="shop-price">${theme.price === 0 ? 'Free' : `${theme.price}*`}</span>
+            </div>
+            <p class="shop-item-note">${theme.note}</p>
+        `;
+        const actionBtn = document.createElement('button');
+        actionBtn.className = 'wood-btn small';
+        actionBtn.textContent = active ? 'Equipped' : owned ? 'Use Theme' : 'Unlock';
+        actionBtn.disabled = active;
+        actionBtn.addEventListener('click', () => {
+            playSound('click');
+            purchaseTheme(theme.id);
+        });
+        card.appendChild(actionBtn);
+        SHOP_GRID_EL.appendChild(card);
+    });
+}
+
+function getMergeTier(groupSize) {
+    if (groupSize >= 10) return 4;
+    if (groupSize >= 6) return 3;
+    if (groupSize >= 3) return 2;
+    if (groupSize >= 2) return 1;
+    return 0;
+}
+
+function clearMergeTierClasses(piece) {
+    piece.el.classList.remove('merge-tier-1', 'merge-tier-2', 'merge-tier-3', 'merge-tier-4', 'merge-flash');
+}
+
+function updateMergeStatus(groupSize = 1) {
+    if (!MERGE_STATUS_EL) return;
+    if (groupSize >= 10) MERGE_STATUS_EL.textContent = 'Grand Merge';
+    else if (groupSize >= 6) MERGE_STATUS_EL.textContent = 'Cozy Chain';
+    else if (groupSize >= 3) MERGE_STATUS_EL.textContent = 'Nice Merge';
+    else if (groupSize >= 2) MERGE_STATUS_EL.textContent = 'Linked';
+    else MERGE_STATUS_EL.textContent = 'Warm-up';
+}
+
+function showMergeFeedback(message) {
+    if (!MERGE_FEEDBACK_EL) return;
+    MERGE_FEEDBACK_EL.textContent = message;
+    MERGE_FEEDBACK_EL.classList.remove('hidden');
+    gsap.killTweensOf(MERGE_FEEDBACK_EL);
+    gsap.fromTo(MERGE_FEEDBACK_EL, { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.18 });
+    clearTimeout(mergeFeedbackTimeout);
+    mergeFeedbackTimeout = setTimeout(() => {
+        gsap.to(MERGE_FEEDBACK_EL, {
+            y: -8,
+            opacity: 0,
+            duration: 0.22,
+            onComplete: () => MERGE_FEEDBACK_EL.classList.add('hidden'),
+        });
+    }, 900);
+}
+
+function celebrateMergeGrowth(groupSize, groupIds) {
+    const tier = getMergeTier(groupSize);
+    if (!tier) return;
+    const message = tier === 4 ? 'Grand merge' : tier === 3 ? 'Cozy chain' : tier === 2 ? 'Nice merge' : 'Tiles linked';
+    showMergeFeedback(message);
+    updateMergeStatus(groupSize);
+    groupIds.forEach((id) => {
+        const piece = pieces.find((item) => item.id === id);
+        if (!piece) return;
+        clearMergeTierClasses(piece);
+        piece.el.classList.add(`merge-tier-${tier}`, 'merge-flash');
+        setTimeout(() => piece.el.classList.remove('merge-flash'), 420);
+    });
+    gsap.fromTo(
+        groupIds.map((id) => pieces.find((item) => item.id === id)?.el).filter(Boolean),
+        { scale: 1 },
+        { scale: 1.03 + tier * 0.01, duration: 0.16, yoyo: true, repeat: 1, ease: 'power1.out' }
+    );
+}
+
+function triggerPeek() {
+    if (isMemorizing || !pieces.length || isPeekActive || !REF_IMAGE_EL) return;
+    playSound('click');
+    isPeekActive = true;
+    const peekStatus = document.getElementById('peek-status');
+    if (peekStatus) peekStatus.textContent = 'OPEN';
+    REF_IMAGE_EL.classList.add('peeking');
+    gsap.fromTo(REF_IMAGE_EL, { scale: 1 }, { scale: 1.06, duration: 0.18, yoyo: true, repeat: 1 });
+    clearTimeout(peekTimeout);
+    peekTimeout = setTimeout(() => {
+        isPeekActive = false;
+        REF_IMAGE_EL.classList.remove('peeking');
+        if (peekStatus) peekStatus.textContent = '2s';
+    }, 1800);
+}
+
+function toggleZenMode() {
+    isZenMode = !isZenMode;
+    stopTimer();
+    updateModeLabels();
+    updateTimerDisplay();
+    saveProgress();
+    if (!WIN_OVERLAY.classList.contains('hidden') || !pieces.length || isMemorizing) return;
+    if (!isZenMode) startTimer();
+}
+
+function getRewardSummary(categoryId, puzzleIndex) {
+    const par = getLevelPar(categoryId);
+    const efficientMoves = moveCount <= par.moveTarget;
+    let stars = 1;
+    let speedBonus = 0;
+    let bonusLabel = 'Relaxed clear';
+
+    if (!isZenMode) {
+        if (timerSeconds <= par.speed && efficientMoves) {
+            stars = 3;
+            speedBonus = 12;
+            bonusLabel = 'Swift and smooth';
+        } else if (timerSeconds <= par.great) {
+            stars = 2;
+            speedBonus = 6;
+            bonusLabel = 'Steady rhythm';
+        } else {
+            bonusLabel = 'Calm finish';
+        }
+    } else {
+        stars = efficientMoves ? 2 : 1;
+        bonusLabel = efficientMoves ? 'Zen efficiency' : 'Zen clear';
+    }
+
+    const baseCoins = 8 + Math.round((par.moveTarget || 10) / 4);
+    return {
+        stars,
+        speedBonus,
+        coins: baseCoins + speedBonus,
+        bonusLabel,
+        efficientMoves,
+    };
+}
+
+function renderWinStars(stars) {
+    if (!WIN_STARS_EL) return;
+    WIN_STARS_EL.querySelectorAll('[data-star]').forEach((starEl, index) => {
+        starEl.style.opacity = index < stars ? '1' : '0.25';
+        starEl.style.transform = index < stars ? 'scale(1)' : 'scale(0.92)';
+    });
+}
+
+function persistWinResult(categoryId, puzzleIndex, result) {
+    const key = puzzleKey(categoryId, puzzleIndex);
+    const previous = playerProgress.bestScores[key];
+    const bestTime = previous ? Math.min(previous.bestTime, timerSeconds || previous.bestTime) : timerSeconds;
+    playerProgress.bestScores[key] = {
+        stars: Math.max(previous?.stars || 0, result.stars),
+        bestTime,
+        bestMoves: previous ? Math.min(previous.bestMoves, moveCount) : moveCount,
+        zenCleared: !!isZenMode || !!previous?.zenCleared,
+    };
+    playerProgress.coins += result.coins;
+    unlockedLevel = Math.max(unlockedLevel, Math.min(categoryId + 1, Object.keys(LEVELS).length));
+    saveProgress();
+    updateCoinDisplays();
+    updateCollectionProgress();
+}
 
 // ── Audio System ──
 class SoundEngine {
@@ -50,46 +461,52 @@ class SoundEngine {
         }
     }
 
-    _note(freq, type, duration, volume, delay = 0) {
+    _tone({ freq, type = 'sine', duration = 0.18, volume = 0.2, delay = 0, attack = 0.02, release = 0.18, detune = 0, lowpass = 1800 }) {
         if (!this.ctx || !this.enabled) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(lowpass, this.ctx.currentTime + delay);
         osc.type = type;
         osc.frequency.setValueAtTime(freq, this.ctx.currentTime + delay);
-        gain.gain.setValueAtTime(volume * this.sfxVolume, this.ctx.currentTime + delay);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + delay + duration);
-        osc.connect(gain);
+        osc.detune.setValueAtTime(detune, this.ctx.currentTime + delay);
+        gain.gain.setValueAtTime(0.0001, this.ctx.currentTime + delay);
+        gain.gain.exponentialRampToValueAtTime(volume * this.sfxVolume, this.ctx.currentTime + delay + attack);
+        gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + delay + duration + release);
+        osc.connect(filter);
+        filter.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start(this.ctx.currentTime + delay);
-        osc.stop(this.ctx.currentTime + delay + duration);
+        osc.stop(this.ctx.currentTime + delay + duration + release);
     }
 
     pickup() {
-        this._note(880, 'sine', 0.12, 0.3);
-        this._note(1320, 'sine', 0.08, 0.15, 0.03);
+        this._tone({ freq: 392, type: 'sine', duration: 0.08, volume: 0.12, attack: 0.01, release: 0.08, lowpass: 1200 });
+        this._tone({ freq: 523, type: 'triangle', duration: 0.06, volume: 0.08, delay: 0.03, attack: 0.01, release: 0.06, lowpass: 1400 });
     }
 
     drop() {
-        this._note(220, 'sine', 0.15, 0.35);
-        this._note(165, 'triangle', 0.1, 0.2, 0.02);
+        this._tone({ freq: 246.94, type: 'sine', duration: 0.1, volume: 0.11, attack: 0.01, release: 0.12, lowpass: 900 });
+        this._tone({ freq: 196, type: 'triangle', duration: 0.08, volume: 0.06, delay: 0.015, attack: 0.01, release: 0.08, lowpass: 700 });
     }
 
     merge() {
-        this._note(523, 'sine', 0.2, 0.3);
-        this._note(659, 'sine', 0.2, 0.25, 0.08);
-        this._note(784, 'sine', 0.3, 0.2, 0.16);
+        this._tone({ freq: 392, type: 'triangle', duration: 0.11, volume: 0.12, attack: 0.01, release: 0.1, lowpass: 1400 });
+        this._tone({ freq: 493.88, type: 'sine', duration: 0.12, volume: 0.08, delay: 0.05, attack: 0.01, release: 0.12, lowpass: 1700 });
+        this._tone({ freq: 587.33, type: 'sine', duration: 0.16, volume: 0.07, delay: 0.1, attack: 0.02, release: 0.14, lowpass: 1900 });
     }
 
     win() {
-        const notes = [523, 659, 784, 1047, 1319, 1568];
+        const notes = [392, 493.88, 587.33, 783.99];
         notes.forEach((freq, i) => {
-            this._note(freq, 'sine', 0.35, 0.25, i * 0.1);
-            this._note(freq * 1.5, 'triangle', 0.25, 0.1, i * 0.1 + 0.05);
+            this._tone({ freq, type: 'triangle', duration: 0.18, volume: 0.11, delay: i * 0.12, attack: 0.02, release: 0.18, lowpass: 1600 });
+            this._tone({ freq: freq * 1.25, type: 'sine', duration: 0.16, volume: 0.05, delay: i * 0.12 + 0.04, attack: 0.01, release: 0.16, lowpass: 2100 });
         });
     }
 
     click() {
-        this._note(600, 'sine', 0.06, 0.15);
+        this._tone({ freq: 523.25, type: 'sine', duration: 0.045, volume: 0.06, attack: 0.005, release: 0.05, lowpass: 1300 });
     }
 }
 
@@ -221,15 +638,9 @@ const LEVELS = buildLevels();
 
 // Helper: format standard names for puzzles inside a category
 function getPuzzleName(categoryId, index) {
-    if (window.LEVEL_IMAGES && window.LEVEL_IMAGES[categoryId]) {
-        let name = window.LEVEL_IMAGES[categoryId][index];
-        if (name) {
-            // Remove extension and capitalize words
-            name = name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
-            return name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-        }
-    }
-    return `Puzzle ${index + 1}`;
+    const categoryLabel = String(categoryId).padStart(2, '0');
+    const puzzleLabel = String(index + 1).padStart(2, '0');
+    return `Puzzle ${categoryLabel}-${puzzleLabel}`;
 }
 
 // Get specific image from the level folder
@@ -244,6 +655,21 @@ function getSelectedImage(categoryId, puzzleIndex) {
 
     // Fallback
     return `/levels/${config.folder}/1.png`;
+}
+
+function getAvailableBoardArea() {
+    const boardWrap = BOARD.closest('.board-wrap');
+    if (!boardWrap) {
+        return { width: 500, height: 600 };
+    }
+
+    const styles = window.getComputedStyle(boardWrap);
+    const paddingX = parseFloat(styles.paddingLeft || '0') + parseFloat(styles.paddingRight || '0');
+    const paddingY = parseFloat(styles.paddingTop || '0') + parseFloat(styles.paddingBottom || '0');
+    const width = Math.max(180, boardWrap.clientWidth - paddingX - 28);
+    const height = Math.max(180, boardWrap.clientHeight - paddingY - 28);
+
+    return { width, height };
 }
 
 // ── Piece Class ──
@@ -335,6 +761,7 @@ function startTimer() {
     stopTimer();
     timerSeconds = 0;
     updateTimerDisplay();
+    if (isZenMode) return;
     timerInterval = setInterval(() => {
         timerSeconds++;
         updateTimerDisplay();
@@ -350,9 +777,7 @@ function stopTimer() {
 
 function updateTimerDisplay() {
     if (!TIMER_EL) return;
-    const m = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
-    const s = (timerSeconds % 60).toString().padStart(2, '0');
-    TIMER_EL.textContent = `${m}:${s}`;
+    TIMER_EL.textContent = isZenMode ? 'Zen' : formatTime(timerSeconds);
 }
 
 function updateMoveCount() {
@@ -387,6 +812,14 @@ function initLevel(categoryId, puzzleIndex) {
     moveCount = 0;
     topZIndex = 10;
     updateMoveCount();
+    currentCategory = categoryId;
+    currentPuzzleIndex = puzzleIndex;
+    saveProgress();
+    updateModeLabels();
+    updateCollectionProgress();
+    updateBestScorePanel(categoryId, puzzleIndex);
+    updateMergeStatus(1);
+    openSidebarPanel('reference-panel');
     
     const puzzleName = getPuzzleName(categoryId, puzzleIndex);
     LEVEL_DISPLAY.innerText = `Level ${categoryId} - ${puzzleName}`;
@@ -415,10 +848,9 @@ function initLevel(categoryId, puzzleIndex) {
 function setupBoard(levelNum, config, imageUrl, imgW, imgH) {
     const { rows, cols } = config;
 
-    // Size the board to the image dimensions, capped to fit viewport
-    // Max board area: leave space for header and sidebar
-    const maxBoardW = 500;
-    const maxBoardH = 600;
+    const availableArea = getAvailableBoardArea();
+    const maxBoardW = availableArea.width;
+    const maxBoardH = availableArea.height;
 
     let boardW = imgW;
     let boardH = imgH;
@@ -440,7 +872,7 @@ function setupBoard(levelNum, config, imageUrl, imgW, imgH) {
     pieceH = boardH / rows;
 
     // Board sizing (add border)
-    const borderSize = 4;
+    const borderSize = 8;
     BOARD.style.width = `${boardW + borderSize * 2}px`;
     BOARD.style.height = `${boardH + borderSize * 2}px`;
 
@@ -742,13 +1174,18 @@ function bounceBack(movedPieces) {
 
 // ── Merge Logic (Grid-Based) ──
 function checkAllMerges() {
-    let oldMergedCount = 0;
-    Object.values(groups).forEach(g => { if (g.length > 1) oldMergedCount += g.length; });
+    const oldGroupSizes = {};
+    Object.entries(groups).forEach(([groupId, pieceIds]) => {
+        pieceIds.forEach((id) => {
+            oldGroupSizes[id] = pieceIds.length;
+        });
+    });
 
     // Reset all groups 
     groups = {};
     nextGroupId = 1;
     pieces.forEach(p => {
+        clearMergeTierClasses(p);
         p.groupId = nextGroupId++;
         groups[p.groupId] = [p.id];
     });
@@ -782,13 +1219,28 @@ function checkAllMerges() {
         }
     }
 
-    let newMergedCount = 0;
-    Object.values(groups).forEach(g => { if (g.length > 1) newMergedCount += g.length; });
+    let didGrow = false;
+    let biggestGroup = 1;
+    Object.values(groups).forEach((groupIds) => {
+        const size = groupIds.length;
+        biggestGroup = Math.max(biggestGroup, size);
+        groupIds.forEach((id) => {
+            const piece = pieces.find((item) => item.id === id);
+            if (!piece) return;
+            const tier = getMergeTier(size);
+            if (tier) piece.el.classList.add(`merge-tier-${tier}`);
+        });
+        const previousLargest = Math.max(...groupIds.map((id) => oldGroupSizes[id] || 1));
+        if (size > previousLargest && size > 1) {
+            didGrow = true;
+            celebrateMergeGrowth(size, groupIds);
+        }
+    });
 
-    if (newMergedCount > oldMergedCount) {
+    updateMergeStatus(biggestGroup);
+
+    if (didGrow) {
         playSound('snap');
-        // brief flash on the newly snapped pieces isn't strictly necessary or could be tricky to isolate easily.
-        // We'll just rely on the sound. 
     }
 
     checkWinCondition();
@@ -829,10 +1281,18 @@ function checkWinCondition() {
             if (finalGroup.length === pieces.length) {
                 stopTimer();
                 playSound('win');
+                const reward = getRewardSummary(currentCategory, currentPuzzleIndex);
+                persistWinResult(currentCategory, currentPuzzleIndex, reward);
                 
                 // Update win card stats
                 const winMoves = document.getElementById('win-moves');
                 if (winMoves) winMoves.textContent = moveCount;
+                if (WIN_TIME_EL) WIN_TIME_EL.textContent = isZenMode ? 'ZEN' : formatTime(timerSeconds);
+                if (WIN_COINS_EL) WIN_COINS_EL.textContent = reward.coins;
+                if (WIN_BONUS_LINE_EL) WIN_BONUS_LINE_EL.textContent = reward.speedBonus
+                    ? `${reward.bonusLabel} +${reward.speedBonus} bonus`
+                    : reward.bonusLabel;
+                renderWinStars(reward.stars);
                 
                 WIN_OVERLAY.classList.remove('hidden');
                 gsap.fromTo('.win-modal', { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.7)' });
@@ -885,6 +1345,9 @@ function showMainMenu() {
     WIN_OVERLAY.classList.add('hidden');
     if (GAME_AREA) GAME_AREA.classList.add('hidden');
     stopTimer();
+    updateModeLabels();
+    updateCoinDisplays();
+    updateCollectionProgress();
 }
 
 function showCategorySelect() {
@@ -895,12 +1358,15 @@ function showCategorySelect() {
     if (GAME_AREA) GAME_AREA.classList.add('hidden');
     
     document.getElementById('level-screen-title').innerText = 'LEVELS';
-    document.getElementById('level-screen-subtitle').style.display = 'none';
+    document.getElementById('level-screen-subtitle').style.display = 'block';
+    document.getElementById('level-screen-subtitle').textContent = 'Pick a collection';
     
     PUZZLE_GRID.classList.add('hidden');
+    PUZZLE_GRID.classList.remove('collection-groups');
     CATEGORY_GRID.classList.remove('hidden');
     
     generateCategoryGrid();
+    updateCollectionProgress();
 }
 
 function showGame() {
@@ -909,6 +1375,9 @@ function showGame() {
     GAME_HEADER.classList.remove('hidden');
     BOARD.classList.remove('hidden');
     if (GAME_AREA) GAME_AREA.classList.remove('hidden');
+    updateModeLabels();
+    updateCoinDisplays();
+    openSidebarPanel('reference-panel');
 }
 
 // ── Level Grids ──
@@ -941,10 +1410,11 @@ function generateCategoryGrid() {
         } else {
             const firstImgUrl = images && images.length > 0 ? `/levels/${config.folder}/${encodeURIComponent(images[0])}` : '';
             const imgStyle = firstImgUrl ? `background-image: url('${firstImgUrl}'); background-size: contain; background-repeat: no-repeat; background-position: center; border-radius: 6px; width: 100%; flex: 1; min-height: 0; margin-bottom: 4px;` : `width: 100%; flex: 1; min-height: 0; background-color: rgba(0,0,0,0.1); border-radius: 6px; margin-bottom: 4px;`;
+            const completedInLevel = Object.keys(playerProgress.bestScores).filter(key => key.startsWith(`${i}:`)).length;
             btn.innerHTML = `
                 <div style="${imgStyle}"></div>
                 <span style="font-size: 14px; letter-spacing: 0;">Level ${i}</span>
-                <span class="stars-mini" style="font-size: 10px; letter-spacing: 0; margin-bottom: 0;">${count} Puzzles</span>
+                <span class="stars-mini" style="font-size: 10px; letter-spacing: 0; margin-bottom: 0;">${completedInLevel}/${count} cleared</span>
             `;
             btn.addEventListener('click', () => showPuzzleSelect(i));
         }
@@ -953,8 +1423,9 @@ function generateCategoryGrid() {
 }
 
 function showPuzzleSelect(categoryId) {
-    document.getElementById('level-screen-title').innerText = `LEVEL ${categoryId}`;
+    document.getElementById('level-screen-title').innerText = `COLLECTION ${String(categoryId).padStart(2, '0')}`;
     document.getElementById('level-screen-subtitle').style.display = 'block';
+    document.getElementById('level-screen-subtitle').textContent = 'Choose a puzzle set';
     
     CATEGORY_GRID.classList.add('hidden');
     PUZZLE_GRID.classList.remove('hidden');
@@ -1002,12 +1473,29 @@ if (volumeSliderGame) volumeSliderGame.addEventListener('input', updateVolume);
 
 // Shop
 const openShopBtn = document.getElementById('open-shop');
+const openShopMenuBtn = document.getElementById('open-shop-menu');
 const closeShopBtn = document.getElementById('close-shop-btn');
 const shopOverlay = document.getElementById('shop-overlay');
+const openShopSideBtn = document.getElementById('btn-open-shop-side');
 
 if (openShopBtn && shopOverlay) {
     openShopBtn.addEventListener('click', () => {
         playSound('click');
+        renderShop();
+        shopOverlay.classList.remove('hidden');
+    });
+}
+if (openShopMenuBtn && shopOverlay) {
+    openShopMenuBtn.addEventListener('click', () => {
+        playSound('click');
+        renderShop();
+        shopOverlay.classList.remove('hidden');
+    });
+}
+if (openShopSideBtn && shopOverlay) {
+    openShopSideBtn.addEventListener('click', () => {
+        playSound('click');
+        renderShop();
         shopOverlay.classList.remove('hidden');
     });
 }
@@ -1018,23 +1506,26 @@ if (closeShopBtn && shopOverlay) {
     });
 }
 
-// Powerups (UI Only)
-['btn-hint', 'btn-freeze', 'btn-autosolve'].forEach(id => {
-    const btn = document.getElementById(id);
-    if (btn) {
-        btn.addEventListener('click', () => {
-            playSound('click');
-            alert('Power-ups coming soon!');
+const peekBtn = document.getElementById('btn-peek');
+if (peekBtn) peekBtn.addEventListener('click', triggerPeek);
+
+SIDEBAR_TABS.forEach((tab) => {
+    tab.addEventListener('click', () => {
+        playSound('click');
+        const panelId = tab.getAttribute('data-sidebar-panel');
+        SIDEBAR_TABS.forEach((item) => item.classList.toggle('active', item === tab));
+        document.querySelectorAll('.sidebar-panel').forEach((panel) => {
+            panel.classList.toggle('active', panel.id === panelId);
         });
-    }
+    });
 });
 
-// Update Menu button bindings
-const homeBtn = document.getElementById('home-btn');
-if (homeBtn) {
-    homeBtn.addEventListener('click', () => {
-        playSound('click');
-        showMainMenu();
+function openSidebarPanel(panelId) {
+    SIDEBAR_TABS.forEach((tab) => {
+        tab.classList.toggle('active', tab.getAttribute('data-sidebar-panel') === panelId);
+    });
+    document.querySelectorAll('.sidebar-panel').forEach((panel) => {
+        panel.classList.toggle('active', panel.id === panelId);
     });
 }
 
@@ -1042,14 +1533,14 @@ const pauseBtn = document.getElementById('pause-btn');
 if (pauseBtn) {
     pauseBtn.addEventListener('click', () => {
         playSound('click');
+        BOARD.innerHTML = '';
+        stopTimer();
         showCategorySelect();
     });
 }
 
 const backToMainBtn = document.getElementById('back-to-main-btn');
-// Overriding old behavior
 if (backToMainBtn) {
-    backToMainBtn.removeEventListener('click', showMainMenu);
     backToMainBtn.addEventListener('click', () => {
         playSound('click');
         if (!PUZZLE_GRID.classList.contains('hidden')) {
@@ -1063,6 +1554,7 @@ if (backToMainBtn) {
 
 function generatePuzzleGrid(categoryId) {
     PUZZLE_GRID.innerHTML = '';
+    PUZZLE_GRID.classList.add('collection-groups');
     
     const images = window.LEVEL_IMAGES ? window.LEVEL_IMAGES[categoryId] : null;
     const maxPuzzles = images ? images.length : 0;
@@ -1073,71 +1565,104 @@ function generatePuzzleGrid(categoryId) {
     }
 
     const config = LEVELS[categoryId];
+    const groupSize = 4;
 
-    for (let i = 0; i < maxPuzzles; i++) {
-        const btn = document.createElement('button');
-        btn.className = 'wood-btn level-btn puzzle-btn';
-        
-        const puzzleName = getPuzzleName(categoryId, i);
-        // Small thumbnail of the puzzle image
-        const imgUrl = `/levels/${config.folder}/${encodeURIComponent(images[i])}`;
+    for (let groupStart = 0; groupStart < maxPuzzles; groupStart += groupSize) {
+        const groupEnd = Math.min(groupStart + groupSize, maxPuzzles);
+        const groupSection = document.createElement('section');
+        groupSection.className = 'puzzle-group';
 
-        btn.innerHTML = `
-            <div style="width: 100%; flex: 1; min-height: 0; background-image: url('${imgUrl}'); background-size: contain; background-repeat: no-repeat; background-position: center; border-radius: 6px; margin-bottom: 6px;"></div>
-            <span style="font-size: 14px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; width: 100%; text-align: center; letter-spacing: 0;">${puzzleName}</span>
+        const clearedCount = Array.from({ length: groupEnd - groupStart }, (_, offset) => getBestScore(categoryId, groupStart + offset)).filter(Boolean).length;
+        groupSection.innerHTML = `
+            <div class="puzzle-group-header">
+                <div class="puzzle-group-title">Set ${Math.floor(groupStart / groupSize) + 1}</div>
+                <div class="puzzle-group-meta">${clearedCount}/${groupEnd - groupStart} cleared</div>
+            </div>
+            <div class="puzzle-group-grid"></div>
         `;
-        
-        btn.addEventListener('click', () => {
-            currentCategory = categoryId;
-            currentPuzzleIndex = i;
-            showGame();
-            setTimeout(() => initLevel(categoryId, i), 100);
-        });
-        
-        PUZZLE_GRID.appendChild(btn);
+
+        const groupGrid = groupSection.querySelector('.puzzle-group-grid');
+
+        for (let i = groupStart; i < groupEnd; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'wood-btn level-btn puzzle-btn';
+
+            const puzzleName = getPuzzleName(categoryId, i);
+            const best = getBestScore(categoryId, i);
+            const starText = best ? `${'★'.repeat(best.stars)}${'☆'.repeat(3 - best.stars)}` : 'New';
+            const imgUrl = `/levels/${config.folder}/${encodeURIComponent(images[i])}`;
+
+            btn.innerHTML = `
+                <div style="width: 100%; flex: 1; min-height: 0; background-image: url('${imgUrl}'); background-size: contain; background-repeat: no-repeat; background-position: center; border-radius: 6px; margin-bottom: 6px;"></div>
+                <span style="font-size: 13px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; width: 100%; text-align: center; letter-spacing: 0;">${puzzleName}</span>
+                <span class="stars-mini" style="font-size: 10px; letter-spacing: 0; margin-top: 4px;">${starText}</span>
+            `;
+
+            btn.addEventListener('click', () => {
+                currentCategory = categoryId;
+                currentPuzzleIndex = i;
+                showGame();
+                setTimeout(() => initLevel(categoryId, i), 100);
+            });
+
+            groupGrid.appendChild(btn);
+        }
+
+        PUZZLE_GRID.appendChild(groupSection);
     }
 }
 
 // ── Menu Button Handlers ──
 const START_BTN = document.getElementById('start-btn');
 START_BTN.addEventListener('click', () => {
+    playSound('click');
     const isTutorialDone = localStorage.getItem('jigmerge_tutorial_done') === 'true';
     if (!isTutorialDone) {
         showGame();
         initTutorial();
     } else {
-        showCategorySelect();
+        const { category, puzzleIndex } = playerProgress.lastPlayed || defaultProgress.lastPlayed;
+        showGame();
+        setTimeout(() => initLevel(category, puzzleIndex), 100);
     }
 });
 
-document.getElementById('back-to-main-btn').addEventListener('click', () => {
-    // If we are looking at puzzles, go back to categories
-    if (!PUZZLE_GRID.classList.contains('hidden')) {
+const browseBtn = document.getElementById('browse-btn');
+if (browseBtn) {
+    browseBtn.addEventListener('click', () => {
+        playSound('click');
         showCategorySelect();
-    } else {
-        showMainMenu();
-    }
-});
+    });
+}
 
-document.getElementById('pause-btn').addEventListener('click', () => {
-    BOARD.innerHTML = '';
-    stopTimer();
-    showCategorySelect();
-});
+const levelSelectBtn = document.getElementById('level-select-btn');
+if (levelSelectBtn) {
+    levelSelectBtn.addEventListener('click', () => {
+        playSound('click');
+        WIN_OVERLAY.classList.add('hidden');
+        showCategorySelect();
+    });
+}
+
+const zenToggleMenuBtn = document.getElementById('zen-toggle-menu');
+if (zenToggleMenuBtn) {
+    zenToggleMenuBtn.addEventListener('click', () => {
+        playSound('click');
+        toggleZenMode();
+    });
+}
+
+const zenToggleSettingsBtn = document.getElementById('toggle-zen-btn');
+if (zenToggleSettingsBtn) {
+    zenToggleSettingsBtn.addEventListener('click', () => {
+        playSound('click');
+        toggleZenMode();
+    });
+}
 
 // Modals
 const SETTINGS_MODAL = document.getElementById('settings-overlay');
 const SHOP_MODAL = document.getElementById('shop-overlay');
-
-const uiBtns = document.querySelectorAll('.menu-bottom button');
-uiBtns.forEach(btn => {
-    if (btn.innerText === 'SHOP') {
-        btn.addEventListener('click', () => SHOP_MODAL.classList.remove('hidden'));
-    }
-});
-document.getElementById('close-shop-btn').addEventListener('click', () => {
-    SHOP_MODAL.classList.add('hidden');
-});
 
 const settingsBtn = document.getElementById('settings-btn');
 if (settingsBtn) {
@@ -1156,4 +1681,16 @@ toggleSoundBtn.addEventListener('click', () => {
 });
 
 // ── Initialize ──
-showMainMenu();
+applyTheme(playerProgress.activeTheme || 'cozy-hearth');
+updateCoinDisplays();
+updateModeLabels();
+updateCollectionProgress();
+renderShop();
+
+if (localStorage.getItem('jigmerge_tutorial_done') === 'true') {
+    const { category, puzzleIndex } = playerProgress.lastPlayed || defaultProgress.lastPlayed;
+    showGame();
+    setTimeout(() => initLevel(category, puzzleIndex), 100);
+} else {
+    showMainMenu();
+}

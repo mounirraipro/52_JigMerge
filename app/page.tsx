@@ -19,7 +19,7 @@ export default function Home() {
       <section style={{
         width: '100%',
         backgroundColor: 'var(--bg)',
-        paddingTop: '10rem',
+        paddingTop: '8.5rem',
         paddingBottom: '2rem',
         display: 'flex',
         justifyContent: 'center',
@@ -28,11 +28,13 @@ export default function Home() {
       }}>
         <div style={{
           width: '100%',
-          maxWidth: '800px',
-          height: '800px',
+          maxWidth: '1120px',
+          aspectRatio: '16 / 10',
+          minHeight: '620px',
+          maxHeight: '78vh',
           margin: '0 auto',
           position: 'relative',
-          borderRadius: '16px',
+          borderRadius: '22px',
           overflow: 'hidden',
           boxShadow: 'var(--shadow-lg)',
           border: '1px solid var(--border-light)'
