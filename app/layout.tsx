@@ -39,10 +39,7 @@ export const metadata: Metadata = {
   authors: [{ name: "JigMerge Team" }],
   creator: "JigMerge",
   publisher: "JigMerge",
-  metadataBase: new URL("https://JigMerge.online"),
-  alternates: {
-    canonical: "/",
-  },
+  metadataBase: new URL("https://jigmerge.com"),
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -50,7 +47,7 @@ export const metadata: Metadata = {
     title: "JigMerge – Free Online Jigsaw Solitaire Puzzle Game",
     description:
       "JigMerge online! Drag, drop, and swap tiles to restore beautiful images. 25+ levels across 5 categories.",
-    url: "https://JigMerge.online",
+    url: "https://jigmerge.com",
   },
   twitter: {
     card: "summary_large_image",
@@ -103,12 +100,12 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebSite",
               name: "JigMerge",
-              url: "https://JigMerge.online",
+              url: "https://jigmerge.com",
               description:
                 "Free online jigsaw solitaire puzzle game with 25+ levels across 5 categories.",
               potentialAction: {
                 "@type": "SearchAction",
-                target: "https://JigMerge.online/categories?q={search_term_string}",
+                target: "https://jigmerge.com/categories?q={search_term_string}",
                 "query-input": "required name=search_term_string",
               },
             }),

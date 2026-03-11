@@ -1,44 +1,62 @@
 import type { Metadata } from 'next';
-import AdSlot from '../components/AdSlot';
 
 export const metadata: Metadata = {
     title: 'FAQ – JigMerge',
-    description: 'Frequently asked questions about JigMerge. Find answers about gameplay, features, device support, and more.',
+    description: 'Frequently asked questions about JigMerge, including gameplay, devices, privacy, ads, and support.',
     keywords: ['JigMerge FAQ', 'puzzle game questions', 'JigMerge help'],
+    alternates: {
+        canonical: '/faq',
+    },
 };
 
 const faqs = [
     {
         q: 'Is JigMerge really free?',
-        a: 'Yes! JigMerge is 100% free to play. No downloads, no accounts, no hidden paywalls. Just open your browser and start solving puzzles.',
+        a: 'Yes. The game is free to play in the browser. There are no accounts, paid levels, or premium unlocks required to access the core experience.',
+    },
+    {
+        q: 'Do I need to download anything?',
+        a: 'No. JigMerge runs directly in your browser. If the page loads, you can start playing without installing an app or extension.',
     },
     {
         q: 'What devices can I play on?',
-        a: 'JigMerge works on any modern browser — desktop, tablet, or mobile. The game automatically adapts to your screen size for the best experience.',
+        a: 'JigMerge is designed for modern desktop and mobile browsers. The layout adapts for phones, tablets, and larger screens so the game remains playable across common device sizes.',
     },
     {
         q: 'How does tile merging work?',
-        a: 'When two or more adjacent tiles are both in their correct positions, they automatically merge into a group. Merged groups move together when dragged, making the puzzle easier as you progress.',
+        a: 'When adjacent tiles are both in their correct positions, they merge into a single group. That group then moves together, reducing board complexity and helping you build momentum as the image comes together.',
     },
     {
-        q: 'How many levels are there?',
-        a: 'JigMerge currently features 25 levels across 5 categories (Animals, Nature, Cities, Art, and Food). Each category has 5 levels with increasing difficulty.',
+        q: 'How many levels are available?',
+        a: 'The current site includes 25 handcrafted levels across 5 categories. Each category is meant to offer a slightly different visual feel while preserving the same core rules.',
     },
     {
-        q: 'What does the difficulty progression look like?',
-        a: 'Early levels use a 3×3 grid (9 tiles). As you advance, the grid grows — 4×3, 4×4, and beyond — adding more tiles and complexity to the puzzle.',
+        q: 'Can I save my progress?',
+        a: 'The current experience does not use account-based cloud saving. Some small gameplay preferences may be stored locally in your browser, but progress is not synced across devices.',
     },
     {
-        q: 'Can I play offline?',
-        a: 'JigMerge requires an internet connection to load images and game assets. Once loaded, gameplay is smooth even on slower connections.',
-    },
-    {
-        q: 'Is my progress saved?',
-        a: 'Currently, progress is not saved between sessions. We\'re working on adding progress tracking in a future update.',
+        q: 'Does JigMerge work offline?',
+        a: 'An internet connection is required to load the site and game assets. After the page loads, gameplay itself is lightweight, but the site is not designed as a fully offline product.',
     },
     {
         q: 'Is JigMerge safe for children?',
-        a: 'Yes! JigMerge contains no violent or inappropriate content. It\'s a great way for kids to develop spatial reasoning and problem-solving skills. We also don\'t collect personal information from children.',
+        a: 'The game is designed to be family-friendly and does not include chat, user profiles, or account creation. Parents should still supervise use and review our Parents & Safety Guide and Privacy Policy if children will use the site regularly.',
+    },
+    {
+        q: 'Do you collect personal information?',
+        a: 'You can browse and play without creating an account. If you contact us by email, your message is handled through your email provider and our inbox. Our Privacy Policy explains the limited data processing involved in running the site and any third-party ad services.',
+    },
+    {
+        q: 'Why are ads shown on some pages?',
+        a: 'Ads help support hosting and maintenance so the game can remain free. We aim to keep ads secondary to the main content and not place them in a way that overwhelms gameplay or trust pages.',
+    },
+    {
+        q: 'Can I report a bug or inaccurate page?',
+        a: 'Yes. Please use the Contact page and include the page URL, device, browser, and a short description of the issue. Clear reports help us fix problems faster.',
+    },
+    {
+        q: 'Where should I start if I am new?',
+        a: 'The best starting points are the Play page, the How to Play guide, and a few easier categories. Once you understand the merge mechanic, the strategy articles in the blog will make more sense too.',
     },
 ];
 
@@ -48,19 +66,30 @@ export default function FAQPage() {
             <div className="page-header">
                 <div className="container">
                     <h1 className="gradient-text">Frequently Asked Questions</h1>
-                    <p>Got questions? We&apos;ve got answers.</p>
+                    <p>Clear answers about gameplay, support, privacy, and how the site works.</p>
                 </div>
             </div>
 
             <div className="page-content">
-                {faqs.map((faq, i) => (
-                    <div key={i} style={{ marginBottom: '2rem' }}>
-                        <h3>{faq.q}</h3>
+                <p>
+                    This page exists to answer the questions players ask most often before or after trying
+                    JigMerge. If you need a step-by-step gameplay guide, visit <a href="/how-to-play">How to Play</a>.
+                    If your question is about privacy, ads, or children using the site, the policy pages in the
+                    footer give fuller detail.
+                </p>
+
+                {faqs.map((faq) => (
+                    <section key={faq.q} style={{ marginBottom: '2rem' }}>
+                        <h2 style={{ fontSize: '1.05rem', marginBottom: '0.5rem' }}>{faq.q}</h2>
                         <p>{faq.a}</p>
-                    </div>
+                    </section>
                 ))}
 
-                <AdSlot type="banner" />
+                <h2>Still Need Help?</h2>
+                <p>
+                    If your question is not covered here, please use the <a href="/contact">Contact page</a>.
+                    The more specific your message is, the easier it is for us to give a useful answer.
+                </p>
             </div>
         </>
     );

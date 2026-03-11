@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import AdSlot from '../components/AdSlot';
 
-const SUPPORT_EMAIL = 'hello@JigMerge.online';
+const SUPPORT_EMAIL = 'hello@jigmerge.com';
+const PRIVACY_EMAIL = 'privacy@jigmerge.com';
+const LEGAL_EMAIL = 'legal@jigmerge.com';
+const ACCESSIBILITY_EMAIL = 'accessibility@jigmerge.com';
 
 export default function ContactPage() {
     const [submitted, setSubmitted] = useState(false);
@@ -37,64 +39,69 @@ export default function ContactPage() {
             <div className="page-header">
                 <div className="container">
                     <h1 className="gradient-text">Contact Us</h1>
-                    <p>Have a question, suggestion, or just want to say hello? We&apos;d love to hear from you.</p>
+                    <p>Questions, bug reports, privacy concerns, accessibility feedback, or partnership inquiries are all welcome.</p>
                 </div>
             </div>
 
             <div className="page-content">
-                <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-                    <h2>Get In Touch</h2>
+                <div style={{ maxWidth: '700px', margin: '0 auto' }}>
+                    <h2>How to Reach Us</h2>
                     <p>
-                        We value every message from our community. Whether you&apos;re reporting a bug, suggesting
-                        a new feature, asking about partnerships, or simply sharing your love for puzzles,
-                        we&apos;re here to listen.
+                        The fastest way to contact us is by email. We keep the contact flow simple on purpose:
+                        there is no account system, ticket portal, or required login just to ask a question.
+                        Use the topic that fits best, and include as much detail as you can.
                     </p>
 
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                        gap: '1.5rem',
-                        margin: '2rem 0',
-                    }}>
+                    <div
+                        style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                            gap: '1rem',
+                            margin: '2rem 0',
+                        }}
+                    >
                         {[
-                            { icon: '📧', label: 'Email', value: SUPPORT_EMAIL },
-                            { icon: '⏱️', label: 'Response Time', value: 'Within 48 hours' },
-                            { icon: '🌍', label: 'Available', value: 'Worldwide' },
+                            { label: 'General Support', value: SUPPORT_EMAIL },
+                            { label: 'Privacy', value: PRIVACY_EMAIL },
+                            { label: 'Legal', value: LEGAL_EMAIL },
+                            { label: 'Accessibility', value: ACCESSIBILITY_EMAIL },
                         ].map((item) => (
-                            <div key={item.label} className="card" style={{ textAlign: 'center', padding: '1.5rem' }}>
-                                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{item.icon}</div>
-                                <strong style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.9rem' }}>{item.label}</strong>
-                                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{item.value}</span>
+                            <div key={item.label} className="card" style={{ padding: '1.25rem' }}>
+                                <strong style={{ display: 'block', marginBottom: '0.35rem' }}>{item.label}</strong>
+                                <span style={{ color: 'var(--text-secondary)', fontSize: '0.92rem' }}>{item.value}</span>
                             </div>
                         ))}
                     </div>
 
-                    <AdSlot type="in-content" />
+                    <h2>What to Include in Your Message</h2>
+                    <ul>
+                        <li><strong>For bug reports:</strong> page URL, device, browser, and what happened.</li>
+                        <li><strong>For privacy questions:</strong> the page involved and the concern you want clarified.</li>
+                        <li><strong>For accessibility feedback:</strong> the assistive technology or browser setup you were using.</li>
+                        <li><strong>For content issues:</strong> the article or page title and what seems inaccurate or unclear.</li>
+                    </ul>
 
                     <h2>Send Us a Message</h2>
 
                     {submitted ? (
-                        <div className="card" style={{
-                            textAlign: 'center',
-                            padding: '3rem 2rem',
-                            borderColor: 'var(--accent)',
-                        }}>
+                        <div
+                            className="card"
+                            style={{
+                                textAlign: 'center',
+                                padding: '2.5rem 2rem',
+                                borderColor: 'var(--border)',
+                            }}
+                        >
                             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📨</div>
-                            <h3 style={{ marginBottom: '0.5rem' }}>Email app opened</h3>
+                            <h3 style={{ marginBottom: '0.5rem' }}>Your email app should be opening</h3>
                             <p style={{ color: 'var(--text-secondary)' }}>
-                                If your email app did not open, send your message manually to {SUPPORT_EMAIL}.
+                                If it did not, send your message manually to {SUPPORT_EMAIL}.
                             </p>
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                             <div>
-                                <label htmlFor="name" style={{
-                                    display: 'block',
-                                    marginBottom: '0.5rem',
-                                    fontWeight: 600,
-                                    fontSize: '0.9rem',
-                                    color: 'var(--text)',
-                                }}>
+                                <label htmlFor="name" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem', color: 'var(--text)' }}>
                                     Your Name
                                 </label>
                                 <input
@@ -104,28 +111,12 @@ export default function ContactPage() {
                                     placeholder="Enter your name"
                                     value={formData.name}
                                     onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.875rem 1rem',
-                                        borderRadius: 'var(--radius-md)',
-                                        border: '1px solid var(--border)',
-                                        background: 'var(--bg-card)',
-                                        color: 'var(--text)',
-                                        fontSize: '1rem',
-                                        outline: 'none',
-                                        transition: 'border-color var(--transition)',
-                                    }}
+                                    style={{ width: '100%', padding: '0.875rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text)', fontSize: '1rem', outline: 'none' }}
                                 />
                             </div>
 
                             <div>
-                                <label htmlFor="email" style={{
-                                    display: 'block',
-                                    marginBottom: '0.5rem',
-                                    fontWeight: 600,
-                                    fontSize: '0.9rem',
-                                    color: 'var(--text)',
-                                }}>
+                                <label htmlFor="email" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem', color: 'var(--text)' }}>
                                     Email Address
                                 </label>
                                 <input
@@ -135,28 +126,12 @@ export default function ContactPage() {
                                     placeholder="your@email.com"
                                     value={formData.email}
                                     onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.875rem 1rem',
-                                        borderRadius: 'var(--radius-md)',
-                                        border: '1px solid var(--border)',
-                                        background: 'var(--bg-card)',
-                                        color: 'var(--text)',
-                                        fontSize: '1rem',
-                                        outline: 'none',
-                                        transition: 'border-color var(--transition)',
-                                    }}
+                                    style={{ width: '100%', padding: '0.875rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text)', fontSize: '1rem', outline: 'none' }}
                                 />
                             </div>
 
                             <div>
-                                <label htmlFor="subject" style={{
-                                    display: 'block',
-                                    marginBottom: '0.5rem',
-                                    fontWeight: 600,
-                                    fontSize: '0.9rem',
-                                    color: 'var(--text)',
-                                }}>
+                                <label htmlFor="subject" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem', color: 'var(--text)' }}>
                                     Subject
                                 </label>
                                 <select
@@ -164,16 +139,7 @@ export default function ContactPage() {
                                     required
                                     value={formData.subject}
                                     onChange={(e) => setFormData((prev) => ({ ...prev, subject: e.target.value }))}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.875rem 1rem',
-                                        borderRadius: 'var(--radius-md)',
-                                        border: '1px solid var(--border)',
-                                        background: 'var(--bg-card)',
-                                        color: 'var(--text)',
-                                        fontSize: '1rem',
-                                        outline: 'none',
-                                    }}
+                                    style={{ width: '100%', padding: '0.875rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text)', fontSize: '1rem', outline: 'none' }}
                                 >
                                     <option value="">Select a topic</option>
                                     <option value="General Feedback">General Feedback</option>
@@ -181,39 +147,23 @@ export default function ContactPage() {
                                     <option value="Feature Request">Feature Request</option>
                                     <option value="Partnership Inquiry">Partnership Inquiry</option>
                                     <option value="Privacy Concern">Privacy Concern</option>
+                                    <option value="Accessibility Feedback">Accessibility Feedback</option>
                                     <option value="Other">Other</option>
                                 </select>
                             </div>
 
                             <div>
-                                <label htmlFor="message" style={{
-                                    display: 'block',
-                                    marginBottom: '0.5rem',
-                                    fontWeight: 600,
-                                    fontSize: '0.9rem',
-                                    color: 'var(--text)',
-                                }}>
+                                <label htmlFor="message" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem', color: 'var(--text)' }}>
                                     Message
                                 </label>
                                 <textarea
                                     id="message"
                                     required
-                                    rows={6}
-                                    placeholder="Tell us what's on your mind..."
+                                    rows={7}
+                                    placeholder="Tell us what you noticed, what page you were on, and how we can help."
                                     value={formData.message}
                                     onChange={(e) => setFormData((prev) => ({ ...prev, message: e.target.value }))}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.875rem 1rem',
-                                        borderRadius: 'var(--radius-md)',
-                                        border: '1px solid var(--border)',
-                                        background: 'var(--bg-card)',
-                                        color: 'var(--text)',
-                                        fontSize: '1rem',
-                                        outline: 'none',
-                                        resize: 'vertical',
-                                        fontFamily: 'inherit',
-                                    }}
+                                    style={{ width: '100%', padding: '0.875rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text)', fontSize: '1rem', outline: 'none', resize: 'vertical', fontFamily: 'inherit' }}
                                 />
                             </div>
 
@@ -223,15 +173,13 @@ export default function ContactPage() {
                         </form>
                     )}
 
-                    <h2>Frequently Asked</h2>
+                    <h2>Before You Email</h2>
                     <p>
-                        Before reaching out, you might find your answer in our <a href="/faq">FAQ page</a>.
-                        We&apos;ve compiled answers to the most common questions about JigMerge, gameplay
-                        mechanics, and technical issues.
+                        You may find a quick answer in the <a href="/faq">FAQ</a>, the{' '}
+                        <a href="/how-to-play">How to Play</a> guide, or one of the policy pages in the footer.
+                        We keep those pages updated so players can verify how the site works without guessing.
                     </p>
                 </div>
-
-                <AdSlot type="banner" />
             </div>
         </>
     );

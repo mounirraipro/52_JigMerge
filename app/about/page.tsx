@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
-import AdSlot from '../components/AdSlot';
 
 export const metadata: Metadata = {
     title: 'About Us – JigMerge',
-    description: 'Learn about JigMerge, our mission to create the ultimate free online puzzle experience, and the team behind the game.',
-    keywords: ['about JigMerge', 'puzzle game team', 'who made JigMerge'],
+    description: 'Learn what JigMerge is, how the game is made, and the standards we use for gameplay, site quality, and player trust.',
+    keywords: ['about JigMerge', 'puzzle game team', 'browser puzzle game', 'JigMerge mission'],
+    alternates: {
+        canonical: '/about',
+    },
 };
 
 export default function AboutPage() {
@@ -13,81 +15,99 @@ export default function AboutPage() {
             <div className="page-header">
                 <div className="container">
                     <h1 className="gradient-text">About JigMerge</h1>
-                    <p>Our story, mission, and the passion behind every puzzle piece.</p>
+                    <p>Why we built the game, how we think about quality, and what players can expect from this site.</p>
                 </div>
             </div>
 
             <div className="page-content">
-                <h2>Our Story</h2>
+                <h2>What JigMerge Is</h2>
                 <p>
-                    JigMerge was born from a simple idea: what if the relaxing satisfaction of jigsaw puzzles
-                    could be combined with the strategic tile-swapping of solitaire? The result is a game that&apos;s
-                    instantly intuitive yet endlessly engaging — a puzzle experience unlike any other on the web.
+                    JigMerge is a free browser game that blends the visual satisfaction of jigsaw puzzles with
+                    the planning mindset of tile-based strategy games. Instead of forcing players through a noisy
+                    app install, account wall, or premium upgrade flow, we wanted a version that feels simple:
+                    open the site, understand the rules quickly, and start playing.
                 </p>
                 <p>
-                    We launched JigMerge with a clear vision — to create a free, accessible, and beautifully
-                    designed puzzle game that anyone can enjoy. Whether you&apos;re a student taking a study break, a
-                    professional unwinding after work, or a parent looking for screen time that&apos;s actually
-                    beneficial for your kids, JigMerge has something for you.
-                </p>
-
-                <h2>Our Mission</h2>
-                <p>
-                    We believe that puzzle games are more than entertainment — they&apos;re tools for building
-                    cognitive skills, improving focus, and finding moments of calm in a busy world. Our mission
-                    is to make high-quality puzzle experiences freely available to everyone, everywhere.
-                </p>
-                <p>
-                    Every level in JigMerge is handcrafted with care. From selecting the perfect images to
-                    fine-tuning the difficulty progression, we obsess over the details so you can simply enjoy
-                    the puzzles.
+                    The game is designed for people who like calm challenge. Some players arrive because they
+                    love puzzles. Others come because they want a more intentional alternative to passive screen
+                    time. Our job is to make that experience easy to access and worth returning to.
                 </p>
 
-                <AdSlot type="in-content" />
-
-                <h2>What Makes Us Different</h2>
+                <h2>Why We Built It</h2>
                 <p>
-                    Unlike traditional jigsaw apps, JigMerge uses a unique tile-swapping mechanic. Instead
-                    of fitting irregular pieces together, you work within a clean grid — dragging and dropping
-                    tiles to swap their positions. When adjacent tiles are in their correct spots, they merge
-                    into a group that moves together as one. This creates a satisfying cascade effect as you
-                    solve the puzzle.
+                    The idea behind JigMerge came from a gap we kept noticing in online puzzle spaces. Many sites
+                    offered either very traditional jigsaws or extremely fast, ad-heavy casual games. We wanted
+                    something in between: a puzzle that felt visually intuitive, mechanically satisfying, and calm
+                    enough to support real focus.
+                </p>
+                <p>
+                    That led to the tile-swapping system at the center of JigMerge. It keeps the visual pleasure
+                    of restoring an image, but it also creates a more readable digital interaction. You are not
+                    fighting awkward piece geometry. You are making deliberate decisions on a clear grid, which is
+                    better suited to browsers, touch screens, and short repeat sessions.
                 </p>
 
-                <h3>Key Features</h3>
+                <h2>What We Care About</h2>
+                <p>
+                    <strong>Playability first:</strong> The game itself should stay central. Ads, navigation, and
+                    supporting content should never make the puzzle harder to understand or enjoy.
+                </p>
+                <p>
+                    <strong>Useful supporting content:</strong> We publish blog posts, guides, and family-facing
+                    resources to help people understand the game, choose better puzzle experiences, and think more
+                    clearly about digital play.
+                </p>
+                <p>
+                    <strong>Trust and transparency:</strong> We aim to be clear about what the site does, what data
+                    it uses, and what players should expect. If a page covers privacy, children, ads, or legal use,
+                    it should match the real behavior of the site.
+                </p>
+
+                <h2>How We Approach Content</h2>
+                <p>
+                    JigMerge includes editorial content because puzzle sites feel more useful when they offer more
+                    than a single landing page. Our articles focus on strategy, family use, game history, and the
+                    psychology of puzzle-solving. When we make claims about learning, attention, or child use, we
+                    try to ground those pages in reputable public references and keep the tone practical rather than
+                    sensational.
+                </p>
+                <p>
+                    We do not treat the blog as filler for ads. The goal is to publish pages that answer real user
+                    questions: how the game works, why puzzle difficulty matters, what makes a browser game feel
+                    trustworthy, and how parents can judge whether a digital puzzle is worth their child&apos;s time.
+                </p>
+
+                <h2>How the Site Supports Itself</h2>
+                <p>
+                    JigMerge is free to access. To help cover hosting and maintenance, the site may display ads
+                    from third-party providers such as Google AdSense. We try to keep advertising secondary to the
+                    actual experience. Legal, safety, and support pages exist to inform users, not to maximize ad
+                    inventory, and that is how we intend to keep them.
+                </p>
+
+                <h2>What We Do Not Do</h2>
                 <ul>
-                    <li><strong>5 Beautiful Categories:</strong> Animals, Nature, Cities, Art, and Food — each with stunning imagery.</li>
-                    <li><strong>25 Handcrafted Levels:</strong> Progressive difficulty from easy 3×3 grids to challenging 3×5 grids.</li>
-                    <li><strong>Smart Tile Merging:</strong> Correctly placed adjacent tiles merge into movable groups.</li>
-                    <li><strong>Smooth Animations:</strong> Fluid drag-and-drop with satisfying visual feedback.</li>
-                    <li><strong>No Downloads Required:</strong> Play instantly in your browser on any device.</li>
-                    <li><strong>100% Free:</strong> No paywalls, no premium tiers. Just pure puzzle fun.</li>
+                    <li>We do not require account creation to play.</li>
+                    <li>We do not sell premium access to core gameplay.</li>
+                    <li>We do not run chat, public profiles, or social posting features on the site.</li>
+                    <li>We do not present the site as medical, educational, or therapeutic advice.</li>
                 </ul>
 
-                <h2>Our Values</h2>
+                <h2>Who JigMerge Is For</h2>
                 <p>
-                    <strong>Accessibility First:</strong> We design for everyone. Our game works across devices
-                    and screen sizes, with clear visuals and intuitive controls.
-                </p>
-                <p>
-                    <strong>Privacy Matters:</strong> We respect your data. We don&apos;t collect personal
-                    information from children, and we&apos;re transparent about how we use cookies and analytics.
-                    Read our <a href="/privacy-policy">Privacy Policy</a> for full details.
-                </p>
-                <p>
-                    <strong>Quality Over Quantity:</strong> We&apos;d rather have 25 beautifully crafted levels
-                    than 1,000 mediocre ones. Every puzzle is tested and refined before release.
+                    The site is built for casual players, puzzle fans, families looking for calmer browser content,
+                    and anyone who wants short sessions of focused problem-solving. Some people use the game as a
+                    break between tasks. Some play with children. Some simply enjoy visual strategy. We try to make
+                    the experience flexible enough to support all three.
                 </p>
 
-                <h2>Get In Touch</h2>
+                <h2>Contact and Feedback</h2>
                 <p>
-                    We love hearing from our community! Whether you have feedback, suggestions, bug reports,
-                    or just want to say hello, don&apos;t hesitate to reach out through our{' '}
-                    <a href="/contact">Contact page</a>. Your input helps us make JigMerge better for
-                    everyone.
+                    We treat feedback as part of improving the site. If you spot a broken page, confusing rule,
+                    misleading statement, accessibility issue, or privacy concern, please use the{' '}
+                    <a href="/contact">Contact page</a>. Clear support paths make a site more useful, and they
+                    help us keep JigMerge aligned with the standards we want to publish under.
                 </p>
-
-                <AdSlot type="banner" />
             </div>
         </>
     );

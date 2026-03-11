@@ -19,7 +19,7 @@ export async function generateMetadata(
     if (!cat) {
         return {
             title: 'Category Not Found',
-            description: 'The requested category could not be found on JigSolitaire.',
+            description: 'The requested category could not be found on JigMerge.',
             robots: {
                 index: false,
                 follow: false,
@@ -28,13 +28,13 @@ export async function generateMetadata(
     }
 
     const title = `${cat.name} Puzzles – ${cat.levels.length} Levels`;
-    const description = `Play ${cat.name.toLowerCase()} puzzles on JigSolitaire. ${cat.description} ${cat.levels.length} levels from easy to expert.`;
+    const description = `Play ${cat.name.toLowerCase()} puzzles on JigMerge. ${cat.description} ${cat.levels.length} levels from easy to expert.`;
     const canonicalUrl = `/categories/${cat.slug}`;
 
     return {
         title,
         description,
-        keywords: [`${cat.name.toLowerCase()} puzzles`, `${cat.name.toLowerCase()} jigsaw`, `JigSolitaire ${cat.name.toLowerCase()}`, 'free puzzle game'],
+        keywords: [`${cat.name.toLowerCase()} puzzles`, `${cat.name.toLowerCase()} jigsaw`, `JigMerge ${cat.name.toLowerCase()}`, 'free puzzle game'],
         alternates: {
             canonical: canonicalUrl,
         },

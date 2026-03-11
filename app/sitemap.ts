@@ -25,11 +25,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/sitemap-page', priority: 0.2, changeFrequency: 'monthly' as const },
   ];
 
-  // Import the blog posts
-  // (posts already imported at the top)
-
   // Dynamic Blog posts
-  const blogPosts = posts.map((post: any) => ({
+  const blogPosts = posts.map((post) => ({
     path: `/blog/${post.slug}`,
     priority: 0.6,
     changeFrequency: 'monthly' as const,

@@ -72,7 +72,7 @@ export default function AccessibilityPage() {
                 </p>
                 <ul>
                     <li>Contact us through our <a href="/contact">Contact page</a></li>
-                    <li>Email: <strong>accessibility@JigMerge.online</strong></li>
+                    <li>Email: <strong>accessibility@jigmerge.com</strong></li>
                 </ul>
                 <p>
                     We try to respond to accessibility feedback within 5 business days and will do our

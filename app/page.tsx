@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   title: 'JigMerge – Free Online Jigsaw Solitaire Puzzle Game',
   description: 'Play JigMerge free online! A unique blend of jigsaw puzzle and solitaire. Drag, drop, and swap tiles to restore beautiful images across 25+ levels in 5 categories.',
   keywords: ['JigMerge', 'jigsaw puzzle', 'solitaire puzzle', 'online puzzle game', 'free puzzle game', 'brain games', 'tile swap puzzle'],
+  alternates: {
+    canonical: '/',
+  },
 };
 
 export default function Home() {

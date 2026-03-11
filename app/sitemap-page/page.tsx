@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { posts } from '../lib/blogData';
 import { categories } from '../lib/gameData';
 
 export const metadata: Metadata = {
@@ -30,11 +31,10 @@ const sections = [
         title: 'Blog',
         links: [
             { href: '/blog', label: 'Blog Home' },
-            { href: '/blog/what-is-JigMerge', label: 'What is JigMerge?' },
-            { href: '/blog/benefits-of-puzzle-games', label: '7 Brain Benefits of Puzzle Games' },
-            { href: '/blog/tips-and-tricks', label: 'Pro Tips & Tricks' },
-            { href: '/blog/history-of-puzzle-games', label: 'History of Jigsaw & Solitaire' },
-            { href: '/blog/best-puzzle-games-for-kids', label: 'Best Puzzle Games for Kids' },
+            ...posts.map((post) => ({
+                href: `/blog/${post.slug}`,
+                label: post.title,
+            })),
         ],
     },
     {

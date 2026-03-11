@@ -9,6 +9,12 @@ export interface BlogPost {
   content: string;
 }
 
+export interface BlogSource {
+  id: number;
+  text: string;
+  url?: string;
+}
+
 export const posts: BlogPost[] = [
   {
     slug: "what-is-JigMerge",
@@ -435,5 +441,345 @@ export const posts: BlogPost[] = [
       <h3>The Importance of Novelty</h3>
       <p>The key for seniors is to continually challenge themselves. If you do the Sunday crossword in ink every week without trying, it's no longer training your brain. You must seek out new mechanics and unfamiliar challenges to force the brain to build new pathways.</p>
     `
+  },
+  {
+    slug: "daily-puzzle-routine",
+    title: "Build a Daily Puzzle Routine That Actually Sticks",
+    excerpt: "A practical, evidence-aware guide to turning puzzle play into a calming daily habit without burning out or wasting time.",
+    icon: "🗓️",
+    date: "March 8, 2026",
+    readTime: "9 min read",
+    category: "Strategy",
+    content: `
+      <h2>Why a Small Puzzle Habit Works Better Than Occasional Marathons</h2>
+      <p>Most players do not struggle because they lack interest. They struggle because they treat puzzling like an event instead of a rhythm. One weekend they play for two hours, then they forget about it for ten days. When they come back, they have to rebuild the habit from scratch. A better approach is surprisingly modest: create a short, repeatable session that fits naturally into your day.</p>
+      <p>That matters for games like <strong>JigMerge</strong> because the experience is strongest when it becomes part of a larger routine of focus and recovery. A short puzzle session can mark the transition between work and rest, give your brain a break between demanding tasks, or provide a calm alternative to endless scrolling before bed. The goal is not to squeeze every possible minute out of the game. The goal is to create a ritual you will still enjoy next month.</p>
+
+      <h3>Start With a Specific Cue</h3>
+      <p>Habits stick more easily when they are attached to a reliable trigger. Instead of saying, “I should play puzzles more,” give the behavior a home. You might play one level after lunch, spend ten minutes with a category before starting homework, or use a puzzle as your end-of-workday reset. The cue should be obvious and already present in your routine.</p>
+      <p>Good cues are boring in the best way. They happen whether or not you feel motivated. That consistency removes the need to debate with yourself. If the cue appears, the routine begins. Over time, your brain starts to associate that moment with calm concentration, which makes it easier to begin.</p>
+
+      <h3>Keep the Session Short Enough to Feel Easy</h3>
+      <p>One of the biggest mistakes people make is choosing a session length that sounds impressive instead of realistic. A ten-minute session you complete five days a week is far more valuable than a forty-minute session you skip most of the time. Short sessions also protect the game from becoming another obligation on your to-do list.</p>
+      <p>A useful rule is to stop while you still feel good. If you end each session with a sense of momentum instead of mental fatigue, you are much more likely to come back tomorrow. This is especially important for browser-based puzzle games, where accessibility is a strength. You can open the game quickly, play one focused round, and leave before the session becomes noisy or draining.</p>
+
+      <h3>Match the Puzzle to Your Energy Level</h3>
+      <p>Not every day feels the same, so your routine should not demand the same kind of effort every time. On high-energy days, you might enjoy a harder category or a personal-best attempt. On lower-energy days, it is smarter to choose a simpler level and use the session as a recovery tool. Consistency matters more than intensity.</p>
+      <p>Think of your routine as having three modes:</p>
+      <ul>
+        <li><strong>Reset mode:</strong> 5-10 minutes to clear your head after work, studying, or chores.</li>
+        <li><strong>Practice mode:</strong> one or two focused levels where you deliberately test a strategy.</li>
+        <li><strong>Challenge mode:</strong> a longer session when you have the energy to chase speed, efficiency, or harder boards.</li>
+      </ul>
+      <p>If you only allow yourself “challenge mode,” you will skip the habit whenever life feels busy. Flexible routines survive because they adapt.</p>
+
+      <h3>Create a Low-Friction Environment</h3>
+      <p>Habits are often lost in the tiny moments before they start. If your desk is cluttered, your phone is buzzing, and ten other tabs are screaming for attention, even a relaxing game can feel like one more demand. Reduce friction before you begin. Close noisy tabs. Silence notifications for a few minutes. Decide whether you want sound on or off. Make the start of the session feel clean.</p>
+      <p>Environment also shapes the emotional tone of the routine. A puzzle session in a chaotic mental state tends to become restless. A puzzle session with a clear beginning and a quiet screen feels restorative. The difference is subtle, but it changes whether the habit feels nourishing or disposable.</p>
+
+      <h3>Track Consistency, Not Just Performance</h3>
+      <p>It is tempting to measure everything by speed and move count. Those metrics are fun, but they should not be the only scoreboard. If the purpose of your routine is to become consistent, the first thing to track is whether you showed up. A simple streak calendar, journal note, or weekly checklist is enough.</p>
+      <p>This matters because habits often collapse when players interpret one bad session as failure. Maybe you were distracted. Maybe you solved the board slowly. Maybe you felt rusty. None of that means the routine is broken. If you showed up and played with intention, the habit is still working.</p>
+
+      <h3>Use Puzzles as a Replacement, Not Just an Addition</h3>
+      <p>The strongest habits often replace something that already happens automatically. For many people, the easiest swap is screen time that does not feel particularly good afterward. Ten minutes of passive scrolling can become ten minutes of active puzzle solving. A browser tab you open out of boredom can become a deliberate focus break instead.</p>
+      <p>This replacement approach has two benefits. First, it makes the habit easier to fit into your day because it does not require extra time. Second, it gives the routine emotional contrast. When you feel the difference between fragmented scrolling and calm problem-solving, the new habit becomes easier to protect.</p>
+
+      <h3>Protect the Experience From Burnout</h3>
+      <p>Even relaxing activities can become stale if every session feels identical. Variety keeps the routine fresh. Rotate categories. Switch between speed-focused and exploratory play. Some days, focus on efficiency. Other days, deliberately slow down and enjoy the visual pattern recognition side of the game.</p>
+      <p>It also helps to set a soft ceiling. If you intended to play for ten minutes and suddenly an hour disappears, that can be fun occasionally, but it should not become the standard. When a habit starts stealing time from sleep, exercise, or real obligations, it becomes harder to sustain with a positive mindset.</p>
+
+      <h3>Make the Routine Meaningful</h3>
+      <p>Habits become durable when they serve a purpose beyond the activity itself. Ask yourself what role you want puzzle play to serve. Is it your afternoon mental reset? A calmer alternative to social media? A way to practice patience? A shared family ritual after dinner? The answer shapes the structure of the habit.</p>
+      <p>That sense of purpose is especially helpful on days when motivation is low. You are no longer just “playing a game.” You are protecting a part of your day that helps you focus, recover, or reconnect.</p>
+
+      <h3>A Simple Routine You Can Try This Week</h3>
+      <ol>
+        <li>Choose one cue: after lunch, after work, or before evening downtime.</li>
+        <li>Set a small target: one level or ten minutes.</li>
+        <li>Silence distractions before you begin.</li>
+        <li>Pick a mode: reset, practice, or challenge.</li>
+        <li>Mark the session complete when you finish.</li>
+      </ol>
+      <p>If that routine feels almost too easy, you are probably on the right track. Sustainable habits are rarely dramatic. They are simple enough to repeat, flexible enough to survive busy weeks, and satisfying enough to make you want to return tomorrow. That is how a puzzle game stops being a random pastime and becomes a reliable part of your day.</p>
+    `
+  },
+  {
+    slug: "how-puzzle-difficulty-shapes-learning",
+    title: "How Puzzle Difficulty Shapes Learning, Motivation, and Flow",
+    excerpt: "Why the right level of challenge matters so much, and how to tell when a puzzle is helping you grow instead of just frustrating you.",
+    icon: "📈",
+    date: "March 5, 2026",
+    readTime: "10 min read",
+    category: "Science",
+    content: `
+      <h2>The Sweet Spot Between Boredom and Overload</h2>
+      <p>Difficulty is not just a setting on a menu. It is one of the main forces that shapes whether a puzzle feels rewarding, irritating, or forgettable. When a level is too easy, your brain stops paying serious attention. When it is too hard, working memory fills up, mistakes feel random, and motivation drains away. Somewhere in the middle is the sweet spot: enough challenge to require effort, but not so much that the task feels hopeless.</p>
+      <p>This middle zone is where players often learn fastest. In games like <strong>JigMerge</strong>, it is the space where you must notice patterns, test strategies, recover from small mistakes, and hold just enough information in mind to feel mentally engaged. Understanding that balance helps you choose better levels, train more effectively, and avoid the trap of confusing frustration with progress.</p>
+
+      <h3>Why Easy Puzzles Are Useful, But Limited</h3>
+      <p>There is nothing wrong with easy puzzles. In fact, they are often excellent tools for onboarding, confidence-building, and recovery. Easy levels teach mechanics without overwhelming the player. They provide quick wins, clarify visual rules, and help your brain build a foundation for more complex tasks later.</p>
+      <p>The problem comes when every session stays in that comfort zone. If success requires no real planning, attention softens. You stop scanning actively. You rely on habit rather than deliberate thinking. That is enjoyable for relaxation, but it does not create much growth. In learning terms, the task no longer demands enough adaptation.</p>
+
+      <h3>Why Overly Hard Puzzles Can Backfire</h3>
+      <p>Players sometimes assume that the hardest possible puzzle must be the most beneficial. In reality, challenge only helps when it remains interpretable. If the board is so difficult that you cannot tell why you are failing, the experience stops teaching and starts punishing. You may click around, second-guess everything, or quit before any useful pattern has time to emerge.</p>
+      <p>That is partly a working-memory problem. Human attention is limited. If a puzzle asks you to track too many possibilities at once, there is no room left for experimentation or reflection. Instead of learning, you become overloaded. The result is often mental noise, not mastery.</p>
+
+      <h3>Desirable Difficulty vs. Empty Friction</h3>
+      <p>Researchers often use the phrase <em>desirable difficulties</em> to describe challenges that slow you down in a productive way. A desirable difficulty makes you think harder, retrieve useful knowledge, or notice a pattern you would have otherwise missed. Empty friction is different. It feels hard, but it does not deepen understanding.</p>
+      <p>In puzzle design, a desirable difficulty might be a level that forces you to plan moves in sequence or use visual anchors more deliberately. Empty friction might be a messy interface, unclear feedback, or a challenge spike so steep that you cannot form a strategy. Good browser games increase difficulty by enriching decision-making, not by obscuring information.</p>
+
+      <h3>How Challenge Fuels Motivation</h3>
+      <p>Motivation often rises when progress feels possible but not guaranteed. That is why near-miss moments can be so powerful in puzzle games. You almost saw the solution. You were one swap away from unlocking the board. That feeling tells your brain the task is still within reach, which encourages another attempt.</p>
+      <p>But motivation is fragile. If the game repeatedly signals that effort does not matter, interest fades. This is why pacing matters so much. A satisfying challenge creates the feeling, “I can figure this out if I pay closer attention.” A demoralizing challenge creates the feeling, “Nothing I do seems to help.” The first response fuels engagement. The second kills it.</p>
+
+      <h3>The Link to Flow</h3>
+      <p>Psychologist Mihaly Csikszentmihalyi described flow as a state where skill and challenge are well matched. Puzzle players know the feeling instantly. Time narrows. Distractions fade. Each move matters. The task is demanding enough to hold attention, yet clear enough to feel manageable.</p>
+      <p>Flow does not happen only in hard levels. It happens in levels that fit your current skill. For a beginner, a modest board may be perfect. For an experienced player, that same board may feel flat. This is why difficulty is relative. The same puzzle can feel restful to one player and exhausting to another.</p>
+
+      <h3>How to Tell When a Puzzle Is at the Right Level</h3>
+      <p>There are a few practical signs that a puzzle is appropriately challenging:</p>
+      <ul>
+        <li>You make mistakes, but you can usually explain them afterward.</li>
+        <li>You need to slow down and think, but you still believe the solution is reachable.</li>
+        <li>You notice improvement across repeated attempts.</li>
+        <li>Your attention feels absorbed rather than scattered.</li>
+        <li>You finish feeling mentally worked, not mentally wrecked.</li>
+      </ul>
+      <p>If you feel completely disengaged, the level is probably too easy. If you feel lost from the start, it is probably too hard for that moment. The ideal challenge produces friction with feedback.</p>
+
+      <h3>Using Difficulty to Train Specific Skills</h3>
+      <p>Different difficulty levels train different parts of the player. Easier boards are great for building confidence, refining the mechanics of scanning, and learning how merges behave. Mid-level boards often develop planning and pattern recognition. Harder boards pressure your ability to stay calm, hold multiple possibilities in mind, and recover from bad assumptions.</p>
+      <p>That means the smartest practice is not always “pick the hardest thing available.” It is “pick the difficulty that trains the skill you want today.” If you are tired, mid-level pattern practice may be more useful than a brutal endurance run. If you want to improve under pressure, a harder board may be the right call.</p>
+
+      <h3>Why Stepping Down Can Be Strategic</h3>
+      <p>There is no shame in dropping to an easier level after repeated failures. In fact, it can be an efficient learning move. Easier puzzles let you rehearse good habits under lower stress: identifying anchors, clearing space, and recognizing visual clusters. When you return to the harder board, those patterns feel more familiar.</p>
+      <p>Think of it like strength training. You do not need to max out every session to improve. Technique work at a manageable load is part of getting stronger. Puzzle skill works the same way.</p>
+
+      <h3>Design Lessons for Players and Site Owners</h3>
+      <p>For players, the lesson is simple: use difficulty deliberately. Alternate between comfort, practice, and stretch zones. For site owners, the lesson is broader. If you want people to trust your game, your difficulty curve has to feel fair. Sudden spikes, weak feedback, or confusing interfaces make a site feel low quality, no matter how good the idea is.</p>
+      <p>That is one reason challenge design matters for AdSense readiness too. Reviewers and users both respond to whether a site feels intentionally built. A clear learning path, understandable rules, and useful support content make the whole project feel more credible.</p>
+
+      <h3>The Real Goal</h3>
+      <p>The best puzzle difficulty is not the hardest difficulty. It is the one that keeps you learning. Sometimes that means a soothing level after a busy day. Sometimes it means a demanding board that forces you to level up. Progress happens when challenge is tuned closely enough that effort still teaches. That is the balance worth chasing.</p>
+    `
+  },
+  {
+    slug: "choose-puzzle-games-for-kids",
+    title: "How to Choose the Right Puzzle Game for Kids by Age and Attention Span",
+    excerpt: "A parent-friendly framework for picking digital puzzle games that are calm, age-appropriate, and actually worth a child’s screen time.",
+    icon: "🧒",
+    date: "March 2, 2026",
+    readTime: "10 min read",
+    category: "Family",
+    content: `
+      <h2>Not Every “Kids Puzzle Game” Is Actually Good for Kids</h2>
+      <p>Search any app store or browser directory for children’s puzzle games and you will see the same promises over and over: educational, fun, brain-boosting, safe. But those labels do not tell you much. A game can look child-friendly on the surface while still being noisy, manipulative, overly difficult, or packed with distractions. If you want screen time to feel worthwhile, you need a better filter.</p>
+      <p>The good news is that parents do not need to be game experts to evaluate quality. A few practical questions go a long way. Is the challenge appropriate for the child’s current attention span? Does the game reward curiosity or impulsive tapping? Does it respect the child’s pace? Does it avoid monetization tricks that hijack attention? When you start with those questions, it becomes much easier to separate useful puzzle games from flashy time-fillers.</p>
+
+      <h3>Start With Attention Span, Not Age Labels Alone</h3>
+      <p>Age ratings are helpful, but they are only a rough guide. Two children of the same age can have very different tolerance for frustration, reading ability, and interest in structured tasks. A better starting point is to think about session length and attention style.</p>
+      <p>Some children love slow visual matching and can stay with one challenge for fifteen focused minutes. Others need shorter rounds, stronger feedback, and simpler goals. The right game feels slightly stretching but not exhausting. If a child starts randomly tapping after a minute or two, the experience may be mismatched even if the box says it is “for ages 6+.”</p>
+
+      <h3>What Younger Kids Usually Need</h3>
+      <p>For younger children, simplicity is a feature, not a flaw. Good early puzzle games usually have clear visuals, a limited number of options, and immediate cause-and-effect. The child should understand what the goal is without reading dense instructions. Calm feedback matters too. Bright encouragement is fine; constant flashing rewards are not.</p>
+      <p>Look for games that build basic cognitive habits:</p>
+      <ul>
+        <li>recognizing patterns and shapes,</li>
+        <li>dragging or placing objects deliberately,</li>
+        <li>trying again after a small mistake,</li>
+        <li>noticing where pieces belong through visual clues.</li>
+      </ul>
+      <p>At this age, the best digital puzzle is often one that feels almost like a well-designed toy: clear, playful, and low pressure.</p>
+
+      <h3>What Older Kids Can Handle</h3>
+      <p>As children get older, they can usually enjoy more layered mechanics. They may be ready for strategy, planning ahead, and puzzles where one move affects the next. That is where games like <strong>JigMerge</strong> can become interesting. The child is not simply matching shapes. They are also building patience, comparing possibilities, and managing a sequence of choices.</p>
+      <p>Still, complexity should arrive in steps. Good games teach first and intensify later. If the opening experience is confusing, many kids will label the whole game “not fun” and leave before the interesting part begins. Difficulty progression is one of the clearest signs of quality.</p>
+
+      <h3>Use a Five-Part Checklist</h3>
+      <p>When evaluating a puzzle game for a child, this checklist works well:</p>
+      <ol>
+        <li><strong>Clarity:</strong> Can the child understand the goal quickly?</li>
+        <li><strong>Pacing:</strong> Does the game allow thinking time without punishing slowness?</li>
+        <li><strong>Feedback:</strong> Does it help the child learn, or does it just celebrate taps and streaks?</li>
+        <li><strong>Safety:</strong> Are there ads, links, or prompts that could lead the child away from the activity?</li>
+        <li><strong>Respect:</strong> Does the design avoid nagging, countdown pressure, or manipulative rewards?</li>
+      </ol>
+      <p>A game does not have to be perfect in every category, but if it fails badly in two or three of them, it probably is not a great fit.</p>
+
+      <h3>Watch for Red Flags</h3>
+      <p>Parents often notice obvious red flags like inappropriate imagery, but the more common problems are subtler. Here are signs to be cautious about:</p>
+      <ul>
+        <li>ads that appear too frequently or too close to the main controls,</li>
+        <li>constant pop-ups pushing upgrades, currencies, or timers,</li>
+        <li>praise systems that reward tapping speed more than problem-solving,</li>
+        <li>excessive noise, flashing effects, or clutter that overwhelms attention,</li>
+        <li>difficulty spikes that create frustration without teaching.</li>
+      </ul>
+      <p>These patterns are especially important because children often cannot explain why a game feels stressful. They just become irritable, impulsive, or suddenly disengaged.</p>
+
+      <h3>Quality Screen Time Is Usually Interactive and Shared</h3>
+      <p>One of the most useful ways to evaluate a puzzle game is to play it with the child. Shared play reveals more than any age label. You can see where the child gets confused, how they handle mistakes, and whether the game encourages conversation. Good puzzle games naturally create moments like, “What do you notice here?” or “Should we try the corner first?”</p>
+      <p>That shared attention also turns a solo digital activity into a relationship-building one. Even ten minutes of co-playing gives you a direct sense of whether the game supports patience, reasoning, and calm focus.</p>
+
+      <h3>Match the Game to the Moment</h3>
+      <p>Context matters as much as content. A thoughtful strategy puzzle may be excellent on a quiet afternoon and terrible right before bedtime if it becomes overstimulating or frustrating. Some games are best for short waiting periods. Others are better for longer, intentional sessions. Ask not just “Is this a good game?” but “Is this a good game for this child at this time of day?”</p>
+      <p>For example, a simple matching puzzle may work well when a child is tired. A more strategic grid-based game may be better earlier in the day, when the child has more patience for planning and trial-and-error.</p>
+
+      <h3>What Makes JigMerge a Better Fit Than Many Browser Games</h3>
+      <p>JigMerge has a few qualities that make it easier to evaluate positively for families. The core mechanic is visual and understandable. The pace is calmer than many tap-heavy games. There is no account creation, no chat, and no in-app purchase system. The challenge comes from planning and observation rather than reflex pressure.</p>
+      <p>That does not mean it is perfect for every child at every age. Some children may still need simpler tasks first. But it does show what parents should look for more broadly: games that respect a child’s thinking process instead of trying to dominate their attention.</p>
+
+      <h3>Questions to Ask After a Session</h3>
+      <p>After your child plays, ask a few simple questions:</p>
+      <ul>
+        <li>Did the game make you feel calm, excited, or frustrated?</li>
+        <li>Did you feel like you were figuring things out?</li>
+        <li>Was anything confusing or too fast?</li>
+        <li>Would you want to play again tomorrow?</li>
+      </ul>
+      <p>The answers tell you whether the game is building healthy engagement or just capturing attention.</p>
+
+      <h3>The Best Choice Is Usually the One That Ages Well</h3>
+      <p>A worthwhile puzzle game should leave room for growth. It should be approachable today and still interesting after the child improves. That is why games with clear rules, scalable difficulty, and calm presentation tend to last longer in a family rotation. They do not depend on hype. They depend on design quality.</p>
+      <p>If you choose games with that long view in mind, screen time becomes easier to manage. You are not constantly searching for the next distraction. You are building a small library of digital experiences that genuinely support focus, patience, and curiosity.</p>
+    `
+  },
+  {
+    slug: "browser-puzzle-game-review-checklist",
+    title: "A Browser Puzzle Game Review Checklist: How to Judge Quality in 10 Minutes",
+    excerpt: "A practical framework for reviewing browser puzzle games for usability, trust, ad experience, safety, and actual play value.",
+    icon: "✅",
+    date: "February 27, 2026",
+    readTime: "9 min read",
+    category: "Reviews",
+    content: `
+      <h2>Why So Many Browser Games Feel Disposable</h2>
+      <p>Browser games are wonderfully convenient. You can open a tab, start playing, and leave without installing anything. But convenience has a downside: low-quality games are easy to publish too. That means players and parents often have to sort through cluttered sites, confusing controls, aggressive ads, and shallow mechanics just to find one game worth revisiting.</p>
+      <p>If you want a fast way to judge quality, you do not need a formal scoring sheet. You need a consistent checklist. In about ten minutes, most browser puzzle games reveal whether they were built to serve the player or simply to capture a click. The difference shows up in usability, trust, and the overall feeling of the experience.</p>
+
+      <h3>1. Can You Understand the Goal Immediately?</h3>
+      <p>The first test is clarity. Within the opening minute, you should know what the puzzle asks of you. That does not mean every mechanic must be trivial, but the basic objective should be legible. Good games teach through a clean start, early feedback, and visual hierarchy. Weak games hide the goal under clutter or assume players will tolerate confusion long enough to figure it out.</p>
+      <p>In a browser setting, clarity matters even more because there is very little commitment keeping a user around. If the interface feels muddy, most people will simply close the tab.</p>
+
+      <h3>2. Do the Controls Feel Trustworthy?</h3>
+      <p>Puzzle games depend on confidence. You should feel that the game is responding to your intention, not fighting it. Mouse, touch, and drag interactions need to feel stable. If a swap misses, a button overlaps the board, or taps feel inconsistent, the quality of the entire experience drops immediately.</p>
+      <p>Trustworthy controls are especially important for challenge-based games. When a player fails, they should feel responsible for the mistake. If they suspect the interface caused the error, frustration rises and the puzzle itself stops being enjoyable.</p>
+
+      <h3>3. Is the Difficulty Fair?</h3>
+      <p>A good review does not only ask whether a game is hard or easy. It asks whether the challenge feels fair. Are you learning from each attempt? Is the difficulty curve understandable? Do harder levels introduce deeper decisions, or do they simply become more chaotic?</p>
+      <p>Fair difficulty is one of the clearest signs that a site was made with care. It tells you the creator thought about onboarding, player confidence, and long-term engagement rather than dumping users into friction and hoping they stay.</p>
+
+      <h3>4. How Heavy Is the Ad Experience?</h3>
+      <p>This is where many browser games fail. Ads are not the problem by themselves. Bad ad placement is the problem. If banners push the content below the fold, appear between every interaction, or crowd the play area, the site stops feeling like a game and starts feeling like an ad wrapper.</p>
+      <p>When reviewing a puzzle site, look for balance. Is the game still clearly the main event? Are support pages readable without constant interruption? Is there enough original content around the game to justify the ad presence? Sites that answer yes to those questions tend to feel more trustworthy to both users and ad reviewers.</p>
+
+      <h3>5. Does the Site Explain Itself?</h3>
+      <p>A strong browser game site is more than a single canvas embedded on a page. It should also tell users what they are playing, how it works, and where to find help. Pages like About, FAQ, How to Play, Contact, and policy pages matter because they make the project feel real. They show that the site has an owner, a purpose, and standards.</p>
+      <p>This is one of the areas where many hobby projects miss an opportunity. Even a great core game can look unfinished if the surrounding site feels thin or generic.</p>
+
+      <h3>6. Is the Content Original?</h3>
+      <p>Originality matters more than volume. A review-worthy site does not need hundreds of pages, but the pages it has should feel authored. The copy should explain the game in its own words, give practical guidance, and avoid filler. Blog posts should add context, not just repeat obvious search phrases. If everything sounds mass-produced, the site is less memorable and less trustworthy.</p>
+      <p>For puzzle sites, originality often shows up in strategy articles, category descriptions, parent guides, or thoughtful comparisons with other games. These pieces help users and also signal quality to search engines and ad platforms.</p>
+
+      <h3>7. What Happens When Something Goes Wrong?</h3>
+      <p>Review quality also means looking at edge cases. Is there a useful 404 page? Can you find a contact method? Do broken links send you somewhere sensible? Sites that handle small failures gracefully usually handle larger quality issues better too. It is a sign that the builder thought about the whole experience, not only the happy path.</p>
+
+      <h3>8. Does It Respect Privacy and Safety?</h3>
+      <p>You do not need a law degree to review this part. Start simple: can you find a privacy policy, cookie policy, and terms page? Do those pages seem specific to the site, or do they read like generic filler? If the site serves ads, does it clearly disclose that? If children may use the site, is there a parent-facing explanation of safety and data handling?</p>
+      <p>For family-friendly puzzle sites, this matters a lot. A calm, educational-looking game loses credibility if the surrounding trust signals are weak or inconsistent.</p>
+
+      <h3>9. Would You Recommend It After One Session?</h3>
+      <p>After ten minutes, ask the most human question on the list: would you recommend this to a friend, a parent, or a coworker who likes puzzles? If not, why not? Usually the answer points directly to the quality gap. Maybe the interface felt fine but the game had no depth. Maybe the puzzle was good but the site looked unfinished. Maybe the content helped, but the ad experience was too aggressive.</p>
+      <p>That short reflection is often more honest than any numerical score.</p>
+
+      <h3>10. Does the Site Earn a Return Visit?</h3>
+      <p>The best browser puzzle sites create reasons to come back: multiple categories, progressive difficulty, useful help content, and a sense that the project is maintained. Return value is where many clones collapse. They offer a quick novelty hit but nothing durable.</p>
+      <p>JigMerge aims to succeed on this final test by combining a real game loop with supporting content that helps people play better and understand why the experience feels satisfying. That combination is worth looking for across the wider browser-game ecosystem too.</p>
+
+      <h3>A Short Version of the Checklist</h3>
+      <ul>
+        <li>clear goal,</li>
+        <li>reliable controls,</li>
+        <li>fair difficulty,</li>
+        <li>reasonable ad placement,</li>
+        <li>real support and policy pages,</li>
+        <li>original content,</li>
+        <li>good handling of errors,</li>
+        <li>visible privacy and safety standards,</li>
+        <li>recommendation value,</li>
+        <li>replay value.</li>
+      </ul>
+      <p>If a site performs well across those ten points, it probably deserves your time. If it fails several of them quickly, trust your instinct and move on. Browser games should feel lightweight in the best sense: easy to access, easy to understand, and easy to respect.</p>
+    `
   }
 ];
+
+const gameplaySources: BlogSource[] = [
+  { id: 1, text: 'The Strong National Museum of Play: The jigsaw puzzle', url: 'https://www.museumofplay.org/blog/the-jigsaw-puzzle-putting-the-pieces-together/' },
+  { id: 2, text: 'Encyclopaedia Britannica: patience', url: 'https://www.britannica.com/topic/patience-card-game' },
+  { id: 3, text: 'Microsoft Source: how Solitaire became part of Windows', url: 'https://news.microsoft.com/source/features/innovation/how-solitaire-became-part-of-windows/' },
+];
+
+const scienceSources: BlogSource[] = [
+  { id: 1, text: 'National Institute on Aging: cognitive health and older adults', url: 'https://www.nia.nih.gov/health/cognitive-health-and-older-adults' },
+  { id: 2, text: 'Harvard Health Publishing: can brain games make you smarter?', url: 'https://www.health.harvard.edu/mind-and-mood/can-brain-games-make-you-smarter' },
+  { id: 3, text: 'American Psychological Association: what you need to know about attention and distraction', url: 'https://www.apa.org/topics/attention' },
+];
+
+const strategySources: BlogSource[] = [
+  { id: 1, text: 'Encyclopaedia Britannica: flow', url: 'https://www.britannica.com/science/flow-psychology' },
+  { id: 2, text: 'National Institute of Mental Health: caring for your mental health', url: 'https://www.nimh.nih.gov/health/topics/caring-for-your-mental-health' },
+  { id: 3, text: 'American Psychological Association: building better habits', url: 'https://www.apa.org/topics/behavioral-health' },
+];
+
+const historySources: BlogSource[] = [
+  { id: 1, text: 'Encyclopaedia Britannica: jigsaw puzzle', url: 'https://www.britannica.com/topic/jigsaw-puzzle' },
+  { id: 2, text: 'Encyclopaedia Britannica: patience', url: 'https://www.britannica.com/topic/patience-card-game' },
+  { id: 3, text: 'World of Playing Cards: history of playing cards', url: 'https://www.wopc.co.uk/history/' },
+];
+
+const familySources: BlogSource[] = [
+  { id: 1, text: 'HealthyChildren.org: create your family media plan', url: 'https://www.healthychildren.org/English/media/Pages/default.aspx' },
+  { id: 2, text: 'CDC: developmental milestones', url: 'https://www.cdc.gov/ncbddd/actearly/milestones/index.html' },
+  { id: 3, text: 'American Academy of Pediatrics: digital media guidance', url: 'https://publications.aap.org/pediatrics/article/138/5/e20162591/60349/Media-and-Young-Minds' },
+];
+
+const reviewSources: BlogSource[] = [
+  { id: 1, text: 'Google Safety Center: privacy and security tips', url: 'https://safety.google/security/security-tips/' },
+  { id: 2, text: 'Mozilla Foundation: privacy not included', url: 'https://foundation.mozilla.org/en/privacynotincluded/' },
+  { id: 3, text: 'HealthyChildren.org: digital media use and quality', url: 'https://www.healthychildren.org/English/media/Pages/default.aspx' },
+];
+
+const difficultySources: BlogSource[] = [
+  { id: 1, text: 'Encyclopaedia Britannica: Yerkes-Dodson law', url: 'https://www.britannica.com/science/Yerkes-Dodson-law' },
+  { id: 2, text: 'Encyclopaedia Britannica: flow', url: 'https://www.britannica.com/science/flow-psychology' },
+  { id: 3, text: 'American Psychological Association: attention', url: 'https://www.apa.org/topics/attention' },
+];
+
+export const postSources: Record<string, BlogSource[]> = {
+  'what-is-JigMerge': gameplaySources,
+  'benefits-of-puzzle-games': scienceSources,
+  'tips-and-tricks': strategySources,
+  'history-of-puzzle-games': historySources,
+  'best-puzzle-games-for-kids': familySources,
+  'neuroscience-of-puzzle-solving': scienceSources,
+  'puzzles-and-focus': scienceSources,
+  'puzzle-solving-psychology': scienceSources,
+  'pattern-recognition-skills': strategySources,
+  'brain-training-techniques': scienceSources,
+  'mindfulness-and-puzzles': strategySources,
+  'history-of-card-games': historySources,
+  'famous-puzzle-designers': historySources,
+  'golden-age-of-puzzles': historySources,
+  'screen-time-guide': familySources,
+  'family-game-night': familySources,
+  'puzzles-build-resilience': familySources,
+  'best-free-online-puzzle-games': reviewSources,
+  'puzzles-vs-social-media': reviewSources,
+  'puzzles-for-seniors': scienceSources,
+  'daily-puzzle-routine': strategySources,
+  'how-puzzle-difficulty-shapes-learning': difficultySources,
+  'choose-puzzle-games-for-kids': familySources,
+  'browser-puzzle-game-review-checklist': reviewSources,
+};

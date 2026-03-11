@@ -24,7 +24,7 @@ export default function TermsPage() {
 
                 <h2>1. Acceptance of Terms</h2>
                 <p>
-                    By accessing JigMerge at JigMerge.online, you acknowledge that you have read,
+                    By accessing JigMerge at jigmerge.com, you acknowledge that you have read,
                     understood, and agree to be bound by these Terms of Service and our{' '}
                     <a href="/privacy-policy">Privacy Policy</a>. If you do not agree to these terms,
                     please do not use our website.
@@ -130,7 +130,7 @@ export default function TermsPage() {
                 <p>
                     If you have any questions about these Terms of Service, please reach out through
                     our <a href="/contact">Contact page</a> or email us at{' '}
-                    <strong>legal@JigMerge.online</strong>.
+                    <strong>legal@jigmerge.com</strong>.
                 </p>
             </div>
         </>

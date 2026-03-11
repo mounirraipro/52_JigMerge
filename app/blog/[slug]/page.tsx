@@ -1,174 +1,182 @@
-'use client';
-
-import { useMemo, useState } from 'react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import AdSlot from '../../components/AdSlot';
-import { posts } from '../../lib/blogData';
+import AuthorByline from '../../components/AuthorByline';
+import RelatedArticles from '../../components/RelatedArticles';
+import Sources from '../../components/Sources';
+import { postSources, posts } from '../../lib/blogData';
 
-export default function BlogPage() {
-    const [activeCategory, setActiveCategory] = useState('All');
+export function generateStaticParams() {
+    return posts.map((post) => ({ slug: post.slug }));
+}
 
-    const sortedPosts = useMemo(() => {
-        return [...posts].sort(
-            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
-    }, []);
+export async function generateMetadata(
+    { params }: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
+    const { slug } = await params;
+    const post = posts.find((entry) => entry.slug === slug);
 
-    const allCategories = useMemo(
-        () => ['All', ...Array.from(new Set(posts.map((p) => p.category)))],
-        []
-    );
+    if (!post) {
+        return {
+            title: 'Article Not Found',
+            robots: {
+                index: false,
+                follow: false,
+            },
+        };
+    }
 
-    const filteredPosts =
-        activeCategory === 'All'
-            ? sortedPosts
-            : sortedPosts.filter((p) => p.category === activeCategory);
+    return {
+        title: post.title,
+        description: post.excerpt,
+        keywords: [post.category, 'JigMerge blog', 'puzzle article', post.title],
+        alternates: {
+            canonical: `/blog/${post.slug}`,
+        },
+        openGraph: {
+            title: post.title,
+            description: post.excerpt,
+            url: `/blog/${post.slug}`,
+            type: 'article',
+            publishedTime: new Date(post.date).toISOString(),
+        },
+        twitter: {
+            title: post.title,
+            description: post.excerpt,
+            card: 'summary_large_image',
+        },
+    };
+}
+
+export default async function BlogPostPage({
+    params,
+}: {
+    params: Promise<{ slug: string }>;
+}) {
+    const { slug } = await params;
+    const post = posts.find((entry) => entry.slug === slug);
+
+    if (!post) {
+        notFound();
+    }
+
+    const relatedArticles = posts
+        .filter((entry) => entry.slug !== post.slug)
+        .sort((a, b) => {
+            if (a.category === post.category && b.category !== post.category) return -1;
+            if (a.category !== post.category && b.category === post.category) return 1;
+            return new Date(b.date).getTime() - new Date(a.date).getTime();
+        })
+        .slice(0, 4)
+        .map(({ slug: articleSlug, title, excerpt, category, readTime }) => ({
+            slug: articleSlug,
+            title,
+            excerpt,
+            category,
+            readTime,
+        }));
+    const sources = postSources[post.slug] ?? [];
+
+    const articleSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: post.title,
+        description: post.excerpt,
+        datePublished: new Date(post.date).toISOString(),
+        dateModified: new Date(post.date).toISOString(),
+        author: {
+            '@type': 'Organization',
+            name: 'JigMerge Editorial Team',
+        },
+        publisher: {
+            '@type': 'Organization',
+            name: 'JigMerge',
+            url: 'https://jigmerge.com',
+        },
+        mainEntityOfPage: 'https://jigmerge.com/blog/' + post.slug,
+    };
 
     return (
         <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+            />
+
             <div className="page-header">
-                <div className="container">
-                    <h1 className="gradient-text">JigMerge Blog</h1>
-                    <p>Tips, insights, and stories from the world of puzzles.</p>
+                <div className="container" style={{ maxWidth: '800px' }}>
+                    <div
+                        style={{
+                            fontSize: '0.85rem',
+                            color: 'var(--text-muted)',
+                            marginBottom: '0.75rem',
+                        }}
+                    >
+                        <Link href="/blog" style={{ color: 'var(--text-secondary)' }}>
+                            Blog
+                        </Link>{' '}
+                        / {post.category}
+                    </div>
+                    <div
+                        style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.5rem',
+                            padding: '0.35rem 0.8rem',
+                            borderRadius: 'var(--radius-xl)',
+                            background: 'rgba(255, 204, 0, 0.12)',
+                            color: 'var(--text-secondary)',
+                            fontSize: '0.8rem',
+                            fontWeight: 600,
+                            marginBottom: '1rem',
+                        }}
+                    >
+                        <span>{post.icon}</span>
+                        <span>{post.category}</span>
+                    </div>
+                    <h1 className="gradient-text">{post.title}</h1>
+                    <p>{post.excerpt}</p>
                 </div>
             </div>
 
-            <div
-                className="container"
-                style={{ maxWidth: '900px', padding: '0 1.5rem 4rem' }}
-            >
+            <div className="page-content">
+                <AuthorByline date={post.date} readTime={post.readTime} />
+
                 <AdSlot type="banner" />
+
+                <article
+                    style={{ marginTop: '1.5rem' }}
+                    dangerouslySetInnerHTML={{ __html: post.content }}
+                />
 
                 <div
+                    className="card"
                     style={{
+                        marginTop: '2.5rem',
+                        padding: '1.5rem',
                         display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        gap: '1rem',
                         flexWrap: 'wrap',
-                        gap: '0.5rem',
-                        marginTop: '2rem',
-                        marginBottom: '1rem',
                     }}
                 >
-                    {allCategories.map((cat) => (
-                        <button
-                            key={cat}
-                            onClick={() => setActiveCategory(cat)}
-                            style={{
-                                padding: '0.4rem 1rem',
-                                borderRadius: 'var(--radius-xl)',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: '0.85rem',
-                                fontWeight: 600,
-                                background:
-                                    activeCategory === cat
-                                        ? 'var(--primary)'
-                                        : 'rgba(108, 92, 231, 0.1)',
-                                color:
-                                    activeCategory === cat ? '#fff' : 'var(--primary-light)',
-                                transition: 'all 0.2s ease',
-                            }}
-                        >
-                            {cat}
-                        </button>
-                    ))}
+                    <div>
+                        <h2 style={{ margin: 0, fontSize: '1.1rem' }}>Ready for a puzzle break?</h2>
+                        <p style={{ margin: '0.5rem 0 0', color: 'var(--text-secondary)' }}>
+                            Jump back into JigMerge and try the strategies from this article.
+                        </p>
+                    </div>
+                    <Link href="/play" className="btn btn-primary">
+                        Play Now
+                    </Link>
                 </div>
 
-                <p
-                    style={{
-                        color: 'var(--text-muted)',
-                        fontSize: '0.85rem',
-                        marginBottom: '1.5rem',
-                    }}
-                >
-                    Showing {filteredPosts.length} article
-                    {filteredPosts.length !== 1 ? 's' : ''}
-                </p>
+                <Sources sources={sources} />
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                    {filteredPosts.map((post, i) => (
-                        <Link
-                            key={post.slug}
-                            href={`/blog/${post.slug}`}
-                            style={{ textDecoration: 'none' }}
-                        >
-                            <article
-                                className="card animate-in"
-                                style={{
-                                    animationDelay: `${0.1 + i * 0.05}s`,
-                                    display: 'flex',
-                                    gap: '1.5rem',
-                                    cursor: 'pointer',
-                                    alignItems: 'flex-start',
-                                }}
-                            >
-                                <div
-                                    style={{
-                                        fontSize: '2.5rem',
-                                        flexShrink: 0,
-                                        width: '80px',
-                                        height: '80px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        background: 'rgba(108, 92, 231, 0.1)',
-                                        borderRadius: 'var(--radius-md)',
-                                    }}
-                                >
-                                    {post.icon}
-                                </div>
-
-                                <div style={{ flex: 1 }}>
-                                    <div
-                                        style={{
-                                            display: 'flex',
-                                            gap: '1rem',
-                                            marginBottom: '0.5rem',
-                                            fontSize: '0.8rem',
-                                            color: 'var(--text-muted)',
-                                        }}
-                                    >
-                                        <span
-                                            style={{
-                                                padding: '0.2rem 0.6rem',
-                                                borderRadius: 'var(--radius-xl)',
-                                                background: 'rgba(108, 92, 231, 0.15)',
-                                                color: 'var(--primary-light)',
-                                                fontWeight: 600,
-                                            }}
-                                        >
-                                            {post.category}
-                                        </span>
-                                        <span>{post.date}</span>
-                                        <span>{post.readTime}</span>
-                                    </div>
-
-                                    <h2
-                                        style={{
-                                            fontSize: '1.25rem',
-                                            marginBottom: '0.5rem',
-                                            color: 'var(--text)',
-                                        }}
-                                    >
-                                        {post.title}
-                                    </h2>
-
-                                    <p
-                                        style={{
-                                            color: 'var(--text-secondary)',
-                                            fontSize: '0.95rem',
-                                            margin: 0,
-                                            lineHeight: 1.7,
-                                        }}
-                                    >
-                                        {post.excerpt}
-                                    </p>
-                                </div>
-                            </article>
-                        </Link>
-                    ))}
-                </div>
-
-                <AdSlot type="banner" />
+                <RelatedArticles articles={relatedArticles} />
             </div>
         </>
     );

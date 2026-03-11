@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import AdSlot from '../components/AdSlot';
 
 export const metadata: Metadata = {
     title: 'How to Play JigMerge – Complete Guide',
-    description: 'Learn how to play JigMerge step by step. Master tile swapping, group merging, and advanced strategies to solve puzzles faster.',
+    description: 'Learn how to play JigMerge step by step, from the opening preview to tile merges, strategy, and common beginner mistakes.',
     keywords: ['how to play JigMerge', 'JigMerge guide', 'puzzle game tutorial', 'tile swap instructions'],
+    alternates: {
+        canonical: '/how-to-play',
+    },
 };
 
 export default function HowToPlayPage() {
@@ -14,76 +16,112 @@ export default function HowToPlayPage() {
             <div className="page-header">
                 <div className="container">
                     <h1 className="gradient-text">How to Play</h1>
-                    <p>Everything you need to know to master JigMerge — from your first puzzle to advanced strategies.</p>
+                    <p>A full beginner-friendly guide to the rules, rhythm, and strategy behind JigMerge.</p>
                 </div>
             </div>
 
             <div className="page-content">
-                <h2>Getting Started</h2>
+                <h2>The Core Goal</h2>
                 <p>
-                    JigMerge is a unique puzzle game where you swap tiles on a grid to restore a scrambled image.
-                    Unlike traditional jigsaw puzzles with irregular pieces, JigMerge uses a clean grid system
-                    that makes it easy to pick up but challenging to master.
+                    JigMerge is a browser puzzle game where you restore a scrambled image by swapping tiles on a
+                    grid. Unlike a traditional jigsaw, you are not rotating pieces or forcing irregular shapes to
+                    connect. The image is already divided into fixed positions. Your job is to move each tile back
+                    where it belongs using careful swaps and visual recognition.
                 </p>
 
-                <h3>Step 1: Choose a Category</h3>
+                <h2>What Happens at the Start of a Level</h2>
                 <p>
-                    Select from five beautiful categories — Animals, Nature, Cities, Art, and Food. Each category
-                    contains five handcrafted levels with stunning imagery.
+                    Each level begins with a short preview of the completed image. That preview matters more than
+                    many new players realize. It gives you reference points: strong colors, obvious corners,
+                    repeated textures, and the broad structure of the finished picture. Once the preview ends, the
+                    board shuffles and the actual solving begins.
+                </p>
+                <p>
+                    A good first habit is to memorize only a few anchors rather than trying to hold the entire image
+                    in your head. Notice a bright object, a border line, a face, a horizon, or a color cluster. Those
+                    anchors make the early moves much easier.
                 </p>
 
-                <h3>Step 2: Memorize the Image</h3>
+                <h2>How Swapping Works</h2>
                 <p>
-                    When a level starts, you&apos;ll see the complete image for 5 seconds. Study it carefully!
-                    The image will then split into tiles and shuffle to random positions on the grid. Your goal
-                    is to restore the original image.
+                    To move tiles, drag one tile onto another. The two positions swap. There is no inventory, no
+                    separate holding space, and no penalty for experimenting. The challenge comes from making swaps
+                    that improve the overall board instead of fixing one area while accidentally breaking another.
                 </p>
 
-                <h3>Step 3: Swap Tiles</h3>
+                <h2>The Merge Mechanic</h2>
                 <p>
-                    Drag any tile and drop it onto another tile to swap their positions. Keep swapping until
-                    every tile is back in its correct place. The game tracks your moves and time, so try to
-                    solve each puzzle as efficiently as possible!
+                    The signature feature of JigMerge is automatic merging. When neighboring tiles are both in the
+                    correct positions, they merge into a single group. That group then moves together. In practical
+                    terms, this means that correct progress becomes more stable over time. A good board gradually
+                    turns from scattered tiles into larger solved chunks.
+                </p>
+                <p>
+                    This changes the strategy. You are not just looking for one correct tile. You are trying to
+                    create relationships between correct tiles so the board becomes easier to manage. Early merges can
+                    simplify the rest of the level dramatically.
                 </p>
 
-                <AdSlot type="in-content" />
+                <h2>A Simple Beginner Strategy</h2>
+                <ol>
+                    <li><strong>Scan for the easiest anchor pieces first.</strong> Look for corners, borders, or highly distinctive colors.</li>
+                    <li><strong>Build one solved region at a time.</strong> Do not chase every possible match on the board at once.</li>
+                    <li><strong>Use merges as checkpoints.</strong> When tiles lock together, treat that area as a new stable reference point.</li>
+                    <li><strong>Re-scan after every important move.</strong> One good swap can reveal several better options.</li>
+                    <li><strong>Stay calm when stuck.</strong> Most stalls come from tunnel vision, not from an impossible board.</li>
+                </ol>
 
-                <h2>Tile Merging</h2>
+                <h2>How Difficulty Increases</h2>
                 <p>
-                    One of JigMerge&apos;s unique features is automatic tile merging. When two or more
-                    adjacent tiles are both in their correct positions, they merge into a group. Merged groups
-                    move together as a single unit when dragged, making the puzzle progressively easier as you
-                    place more tiles correctly.
+                    JigMerge becomes harder in two main ways: the boards become larger, and the visual relationships
+                    inside the image become more demanding. A small grid gives you fewer possibilities to manage.
+                    Larger grids require more planning, more scanning, and stronger memory for visual detail.
+                </p>
+                <p>
+                    The best way to improve is not to jump immediately to the hardest category. Spend enough time on
+                    mid-level boards that you understand how merges change the shape of the puzzle. Once that feels
+                    natural, higher difficulty becomes much more satisfying.
                 </p>
 
-                <h2>Difficulty Progression</h2>
-                <p>
-                    Levels 1–5 use a 3×3 grid (9 tiles), providing a gentle introduction. As you advance,
-                    the grid size increases — levels 6–10 use 4×3, levels 11–15 use 4×4, and so on.
-                    Larger grids mean more tiles to manage and more complex spatial reasoning required.
-                </p>
-
-                <h2>Tips &amp; Strategies</h2>
+                <h2>Common Mistakes New Players Make</h2>
                 <ul>
-                    <li><strong>Start with corners and edges:</strong> These tiles have fewer possible positions, making them easier to identify.</li>
-                    <li><strong>Look for distinctive features:</strong> Find tiles with unique colors, patterns, or objects to quickly identify their correct positions.</li>
-                    <li><strong>Work in sections:</strong> Focus on one area of the image at a time rather than randomly swapping tiles across the board.</li>
-                    <li><strong>Use the reference image:</strong> The smaller reference image in the sidebar shows the complete picture — use it to guide your placement.</li>
-                    <li><strong>Leverage merged groups:</strong> Once tiles merge, they reduce the complexity. Try to create merges early by placing adjacent tiles correctly.</li>
+                    <li><strong>Rushing the preview:</strong> if you ignore the opening image, you give away free information.</li>
+                    <li><strong>Fixating on one tile:</strong> sometimes the better move is elsewhere on the board.</li>
+                    <li><strong>Ignoring the board as a whole:</strong> good swaps improve structure, not just one local spot.</li>
+                    <li><strong>Playing too fast when stuck:</strong> random swapping creates more confusion than progress.</li>
+                    <li><strong>Underusing easy wins:</strong> small merges add up and often reveal the next correct path.</li>
                 </ul>
 
-                <h2>Ready to Play?</h2>
+                <h2>How to Get Better Faster</h2>
                 <p>
-                    Now that you know the basics, it&apos;s time to put your skills to the test!
-                    Head to the game and start solving puzzles.
+                    Improvement in JigMerge comes from pattern recognition and patience, not from frantic movement.
+                    If you want to level up, slow down enough to notice why a move worked. Ask yourself what clue made
+                    the right tile stand out. Was it color? Edge direction? A recognizable object? That habit turns
+                    accidental success into reusable skill.
+                </p>
+                <p>
+                    It also helps to vary your goals. On one session, focus on finishing a level cleanly. On another,
+                    focus on spotting merges earlier. On another, try to reduce hesitation between moves. Different
+                    goals sharpen different parts of your play.
+                </p>
+
+                <h2>When to Use the Blog</h2>
+                <p>
+                    Once the core rules make sense, the blog becomes more useful. The strategy articles are there to
+                    help you think more deliberately about focus, difficulty, family use, and the puzzle habits that
+                    make the game more enjoyable over time.
+                </p>
+
+                <h2>Ready to Start?</h2>
+                <p>
+                    If you understand the preview, the swap, and the merge, you already know enough to play. The rest
+                    comes from repetition and observation.
                 </p>
                 <p style={{ marginTop: '1.5rem' }}>
                     <Link href="/play" className="btn btn-primary">
                         Play Now →
                     </Link>
                 </p>
-
-                <AdSlot type="banner" />
             </div>
         </>
     );
