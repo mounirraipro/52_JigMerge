@@ -31,6 +31,7 @@ const SIDEBAR_TOGGLE_EL = document.getElementById('sidebar-toggle');
 const SIDEBAR_HOVER_ZONE_EL = document.getElementById('sidebar-hover-zone');
 const PERKS_SIDEBAR_EL = document.getElementById('perks-sidebar');
 const PERKS_SIDEBAR_TOGGLE_EL = document.getElementById('perks-sidebar-toggle');
+const PERKS_HOVER_ZONE_EL = document.getElementById('perks-hover-zone');
 const SIDEBAR_MODE_EL = document.getElementById('sidebar-mode');
 const SIDEBAR_MOVES_EL = document.getElementById('sidebar-moves');
 const SIDEBAR_TIME_EL = document.getElementById('sidebar-time');
@@ -63,6 +64,8 @@ let sidebarHideTimer = null;
 let sidebarExpandedWidth = 220;
 let sidebarPinnedOpen = false;
 let perksSidebarExpandedWidth = 180;
+let perksSidebarHideTimer = null;
+let perksSidebarPinnedOpen = false;
 
 const SHOP_TEASERS = [
     { title: 'Golden frame board', copy: 'A warm carved border skin with soft glow edges.' },
@@ -1596,6 +1599,11 @@ function clearSidebarHideTimer() {
     sidebarHideTimer = null;
 }
 
+function clearPerksSidebarHideTimer() {
+    clearTimeout(perksSidebarHideTimer);
+    perksSidebarHideTimer = null;
+}
+
 function expandSidebar(immediate = false) {
     if (!GAME_SIDEBAR_EL || !GAME_AREA) return;
     clearSidebarHideTimer();
@@ -1651,24 +1659,52 @@ function scheduleSidebarCollapse() {
     sidebarHideTimer = setTimeout(() => collapseSidebar(), 280);
 }
 
-function togglePerksSidebar() {
+function expandPerksSidebar(immediate = false) {
     if (!PERKS_SIDEBAR_EL || !GAME_AREA) return;
-    const willCollapse = !PERKS_SIDEBAR_EL.classList.contains('collapsed');
+    clearPerksSidebarHideTimer();
+    PERKS_SIDEBAR_EL.classList.remove('collapsed');
+    GAME_AREA.classList.remove('perks-sidebar-hidden');
     const width = updatePerksSidebarWidthCache();
-    PERKS_SIDEBAR_EL.classList.toggle('collapsed', willCollapse);
     gsap.killTweensOf([PERKS_SIDEBAR_EL, GAME_AREA]);
     gsap.to(GAME_AREA, {
-        '--left-sidebar-width': willCollapse ? '0px' : `${width}px`,
-        duration: 0.24,
+        '--left-sidebar-width': `${width}px`,
+        duration: immediate ? 0.18 : 0.24,
+        ease: 'power2.out',
+    });
+    gsap.to(PERKS_SIDEBAR_EL, {
+        x: 0,
+        opacity: 1,
+        pointerEvents: 'auto',
+        duration: immediate ? 0.18 : 0.24,
+        ease: 'power2.out',
+    });
+}
+
+function collapsePerksSidebar(immediate = false) {
+    if (!PERKS_SIDEBAR_EL || !GAME_AREA || !isSidebarAutoMode() || perksSidebarPinnedOpen) return;
+    clearPerksSidebarHideTimer();
+    const width = updatePerksSidebarWidthCache();
+    PERKS_SIDEBAR_EL.classList.add('collapsed');
+    GAME_AREA.classList.add('perks-sidebar-hidden');
+    gsap.killTweensOf([PERKS_SIDEBAR_EL, GAME_AREA]);
+    gsap.to(GAME_AREA, {
+        '--left-sidebar-width': '0px',
+        duration: immediate ? 0.2 : 0.28,
         ease: 'power2.inOut',
     });
     gsap.to(PERKS_SIDEBAR_EL, {
-        x: willCollapse ? -(width + 12) : 0,
-        opacity: willCollapse ? 0.2 : 1,
-        pointerEvents: willCollapse ? 'none' : 'auto',
-        duration: 0.24,
+        x: -(width + 18),
+        opacity: 0.2,
+        pointerEvents: 'none',
+        duration: immediate ? 0.2 : 0.28,
         ease: 'power2.inOut',
     });
+}
+
+function schedulePerksSidebarCollapse() {
+    if (!isSidebarAutoMode() || perksSidebarPinnedOpen) return;
+    clearPerksSidebarHideTimer();
+    perksSidebarHideTimer = setTimeout(() => collapsePerksSidebar(), 280);
 }
 
 function syncSidebarBehavior() {
@@ -1695,6 +1731,15 @@ function syncSidebarBehavior() {
             gsap.set(GAME_AREA, { '--left-sidebar-width': `${updatePerksSidebarWidthCache()}px` });
             gsap.set(PERKS_SIDEBAR_EL, { clearProps: 'x,opacity,pointerEvents' });
         }
+
+        if (isSidebarAutoMode()) {
+            if (perksSidebarPinnedOpen) expandPerksSidebar(true);
+            else collapsePerksSidebar(true);
+        } else {
+            GAME_AREA.classList.remove('perks-sidebar-hidden');
+            gsap.set(GAME_AREA, { '--left-sidebar-width': `${updatePerksSidebarWidthCache()}px` });
+            gsap.set(PERKS_SIDEBAR_EL, { clearProps: 'x,opacity,pointerEvents' });
+        }
     }
 }
 
@@ -1712,8 +1757,20 @@ if (SIDEBAR_TOGGLE_EL && GAME_SIDEBAR_EL) {
 if (PERKS_SIDEBAR_TOGGLE_EL && PERKS_SIDEBAR_EL) {
     PERKS_SIDEBAR_TOGGLE_EL.addEventListener('click', () => {
         playSound('click');
-        togglePerksSidebar();
+        perksSidebarPinnedOpen = !perksSidebarPinnedOpen;
+        if (perksSidebarPinnedOpen) expandPerksSidebar(true);
+        else if (isSidebarAutoMode()) collapsePerksSidebar();
     });
+}
+
+if (PERKS_SIDEBAR_EL) {
+    PERKS_SIDEBAR_EL.addEventListener('mouseenter', clearPerksSidebarHideTimer);
+    PERKS_SIDEBAR_EL.addEventListener('mouseleave', schedulePerksSidebarCollapse);
+}
+
+if (PERKS_HOVER_ZONE_EL) {
+    PERKS_HOVER_ZONE_EL.addEventListener('mouseenter', () => expandPerksSidebar());
+    PERKS_HOVER_ZONE_EL.addEventListener('mouseleave', schedulePerksSidebarCollapse);
 }
 
 if (GAME_SIDEBAR_EL) {

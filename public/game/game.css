@@ -764,6 +764,15 @@ body::before {
     z-index: 3;
 }
 
+#perks-hover-zone {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 26px;
+    height: 100%;
+    z-index: 2;
+}
+
 .left-sidebar-topbar {
     padding-bottom: 6px;
 }
@@ -964,6 +973,25 @@ body::before {
     transform: rotate(180deg);
 }
 
+#perks-edge-hint {
+    position: absolute;
+    top: 50%;
+    left: 6px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: rgba(35, 22, 15, 0.72);
+    border: 1px solid rgba(232, 191, 115, 0.22);
+    color: var(--text-muted);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 2;
+}
+
 #sidebar-hover-zone {
     position: absolute;
     top: 0;
@@ -1008,6 +1036,10 @@ body::before {
 }
 
 #game-area.sidebar-hidden #sidebar-edge-hint {
+    opacity: 1;
+}
+
+#game-area.perks-sidebar-hidden #perks-edge-hint {
     opacity: 1;
 }
 
@@ -1900,6 +1932,13 @@ body::before {
 }
 
 @media (max-width: 780px) {
+    #perks-hover-zone,
+    #perks-edge-hint,
+    #sidebar-hover-zone,
+    #sidebar-edge-hint {
+        display: none;
+    }
+
     .board-wrap {
         min-height: 0;
         padding: 14px;
@@ -1987,6 +2026,13 @@ body::before {
     .sidebar-tab {
         min-height: 40px;
         gap: 4px;
+    }
+
+    #perks-hover-zone,
+    #perks-edge-hint,
+    #sidebar-hover-zone,
+    #sidebar-edge-hint {
+        display: none;
     }
 
     .sidebar-tab-text {
