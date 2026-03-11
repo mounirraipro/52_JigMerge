@@ -29,6 +29,12 @@ const COMING_SOON_COPY_EL = document.getElementById('coming-soon-copy');
 const GAME_SIDEBAR_EL = document.getElementById('game-sidebar');
 const SIDEBAR_TOGGLE_EL = document.getElementById('sidebar-toggle');
 const SIDEBAR_HOVER_ZONE_EL = document.getElementById('sidebar-hover-zone');
+const PERKS_SIDEBAR_EL = document.getElementById('perks-sidebar');
+const PERKS_SIDEBAR_TOGGLE_EL = document.getElementById('perks-sidebar-toggle');
+const SIDEBAR_MODE_EL = document.getElementById('sidebar-mode');
+const SIDEBAR_MOVES_EL = document.getElementById('sidebar-moves');
+const SIDEBAR_TIME_EL = document.getElementById('sidebar-time');
+const SIDEBAR_MERGE_EL = document.getElementById('sidebar-merge');
 
 // ── Game Config ──
 let currentCategory = 1;
@@ -54,7 +60,9 @@ let peekTimeout = null;
 let mergeFeedbackTimeout = null;
 let comingSoonInterval = null;
 let sidebarHideTimer = null;
-let sidebarExpandedWidth = 148;
+let sidebarExpandedWidth = 220;
+let sidebarPinnedOpen = false;
+let perksSidebarExpandedWidth = 180;
 
 const SHOP_TEASERS = [
     { title: 'Golden frame board', copy: 'A warm carved border skin with soft glow edges.' },
@@ -234,6 +242,7 @@ function updateCoinDisplays() {
 function updateModeLabels() {
     const modeLabel = isZenMode ? 'Zen' : 'Flow';
     if (MODE_DISPLAY_EL) MODE_DISPLAY_EL.textContent = modeLabel;
+    if (SIDEBAR_MODE_EL) SIDEBAR_MODE_EL.textContent = modeLabel;
 
     const zenLabel = `ZEN MODE: ${isZenMode ? 'ON' : 'OFF'}`;
     const zenStatus = document.getElementById('zen-status');
@@ -343,11 +352,13 @@ function clearMergeTierClasses(piece) {
 
 function updateMergeStatus(groupSize = 1) {
     if (!MERGE_STATUS_EL) return;
-    if (groupSize >= 10) MERGE_STATUS_EL.textContent = 'Grand Merge';
-    else if (groupSize >= 6) MERGE_STATUS_EL.textContent = 'Cozy Chain';
-    else if (groupSize >= 3) MERGE_STATUS_EL.textContent = 'Nice Merge';
-    else if (groupSize >= 2) MERGE_STATUS_EL.textContent = 'Linked';
-    else MERGE_STATUS_EL.textContent = 'Warm-up';
+    let mergeLabel = 'Warm-up';
+    if (groupSize >= 10) mergeLabel = 'Grand Merge';
+    else if (groupSize >= 6) mergeLabel = 'Cozy Chain';
+    else if (groupSize >= 3) mergeLabel = 'Nice Merge';
+    else if (groupSize >= 2) mergeLabel = 'Linked';
+    MERGE_STATUS_EL.textContent = mergeLabel;
+    if (SIDEBAR_MERGE_EL) SIDEBAR_MERGE_EL.textContent = mergeLabel;
 }
 
 function showMergeFeedback(message) {
@@ -807,11 +818,14 @@ function stopTimer() {
 
 function updateTimerDisplay() {
     if (!TIMER_EL) return;
-    TIMER_EL.textContent = isZenMode ? 'Zen' : formatTime(timerSeconds);
+    const timeText = isZenMode ? 'Zen' : formatTime(timerSeconds);
+    TIMER_EL.textContent = timeText;
+    if (SIDEBAR_TIME_EL) SIDEBAR_TIME_EL.textContent = timeText;
 }
 
 function updateMoveCount() {
     if (MOVE_COUNT_EL) MOVE_COUNT_EL.textContent = moveCount;
+    if (SIDEBAR_MOVES_EL) SIDEBAR_MOVES_EL.textContent = moveCount;
 }
 
 // ── Grid Helpers ──
@@ -1560,14 +1574,21 @@ function openSidebarPanel(panelId) {
 }
 
 function isSidebarAutoMode() {
-    return !!(window.matchMedia && window.matchMedia('(hover: hover) and (min-width: 981px)').matches);
+    return !!(window.matchMedia && window.matchMedia('(hover: hover)').matches);
 }
 
 function updateSidebarWidthCache() {
     if (!GAME_SIDEBAR_EL) return sidebarExpandedWidth;
-    const width = Math.max(132, Math.round(GAME_SIDEBAR_EL.getBoundingClientRect().width || GAME_SIDEBAR_EL.scrollWidth || sidebarExpandedWidth));
+    const width = Math.max(220, Math.round(GAME_SIDEBAR_EL.scrollWidth || GAME_SIDEBAR_EL.getBoundingClientRect().width || sidebarExpandedWidth));
     sidebarExpandedWidth = width;
     return sidebarExpandedWidth;
+}
+
+function updatePerksSidebarWidthCache() {
+    if (!PERKS_SIDEBAR_EL) return perksSidebarExpandedWidth;
+    const width = Math.max(180, Math.round(PERKS_SIDEBAR_EL.scrollWidth || PERKS_SIDEBAR_EL.getBoundingClientRect().width || perksSidebarExpandedWidth));
+    perksSidebarExpandedWidth = width;
+    return perksSidebarExpandedWidth;
 }
 
 function clearSidebarHideTimer() {
@@ -1583,14 +1604,14 @@ function expandSidebar(immediate = false) {
 
     if (!isSidebarAutoMode()) {
         gsap.set(GAME_SIDEBAR_EL, { clearProps: 'x,opacity,pointerEvents' });
-        gsap.set(GAME_AREA, { clearProps: 'gridTemplateColumns' });
+        gsap.set(GAME_AREA, { '--right-sidebar-width': `${sidebarExpandedWidth}px` });
         return;
     }
 
     const width = updateSidebarWidthCache();
     gsap.killTweensOf([GAME_SIDEBAR_EL, GAME_AREA]);
     gsap.to(GAME_AREA, {
-        gridTemplateColumns: `minmax(0, 1fr) ${width}px`,
+        '--right-sidebar-width': `${width}px`,
         duration: immediate ? 0.18 : 0.24,
         ease: 'power2.out',
     });
@@ -1604,14 +1625,14 @@ function expandSidebar(immediate = false) {
 }
 
 function collapseSidebar(immediate = false) {
-    if (!GAME_SIDEBAR_EL || !GAME_AREA || !isSidebarAutoMode()) return;
+    if (!GAME_SIDEBAR_EL || !GAME_AREA || !isSidebarAutoMode() || sidebarPinnedOpen) return;
     clearSidebarHideTimer();
     updateSidebarWidthCache();
     GAME_SIDEBAR_EL.classList.add('collapsed');
     GAME_AREA.classList.add('sidebar-hidden');
     gsap.killTweensOf([GAME_SIDEBAR_EL, GAME_AREA]);
     gsap.to(GAME_AREA, {
-        gridTemplateColumns: 'minmax(0, 1fr) 0px',
+        '--right-sidebar-width': '0px',
         duration: immediate ? 0.2 : 0.28,
         ease: 'power2.inOut',
     });
@@ -1625,9 +1646,29 @@ function collapseSidebar(immediate = false) {
 }
 
 function scheduleSidebarCollapse() {
-    if (!isSidebarAutoMode()) return;
+    if (!isSidebarAutoMode() || sidebarPinnedOpen) return;
     clearSidebarHideTimer();
     sidebarHideTimer = setTimeout(() => collapseSidebar(), 280);
+}
+
+function togglePerksSidebar() {
+    if (!PERKS_SIDEBAR_EL || !GAME_AREA) return;
+    const willCollapse = !PERKS_SIDEBAR_EL.classList.contains('collapsed');
+    const width = updatePerksSidebarWidthCache();
+    PERKS_SIDEBAR_EL.classList.toggle('collapsed', willCollapse);
+    gsap.killTweensOf([PERKS_SIDEBAR_EL, GAME_AREA]);
+    gsap.to(GAME_AREA, {
+        '--left-sidebar-width': willCollapse ? '0px' : `${width}px`,
+        duration: 0.24,
+        ease: 'power2.inOut',
+    });
+    gsap.to(PERKS_SIDEBAR_EL, {
+        x: willCollapse ? -(width + 12) : 0,
+        opacity: willCollapse ? 0.2 : 1,
+        pointerEvents: willCollapse ? 'none' : 'auto',
+        duration: 0.24,
+        ease: 'power2.inOut',
+    });
 }
 
 function syncSidebarBehavior() {
@@ -1636,25 +1677,42 @@ function syncSidebarBehavior() {
 
     if (isSidebarAutoMode()) {
         updateSidebarWidthCache();
-        collapseSidebar(true);
-        return;
+        if (sidebarPinnedOpen) expandSidebar(true);
+        else collapseSidebar(true);
+    } else {
+        GAME_SIDEBAR_EL.classList.remove('collapsed');
+        GAME_AREA.classList.remove('sidebar-hidden');
+        gsap.killTweensOf([GAME_SIDEBAR_EL, GAME_AREA]);
+        gsap.set(GAME_SIDEBAR_EL, { clearProps: 'x,opacity,pointerEvents' });
+        gsap.set(GAME_AREA, { '--right-sidebar-width': `${updateSidebarWidthCache()}px` });
     }
 
-    GAME_SIDEBAR_EL.classList.remove('collapsed');
-    GAME_AREA.classList.remove('sidebar-hidden');
-    gsap.killTweensOf([GAME_SIDEBAR_EL, GAME_AREA]);
-    gsap.set(GAME_SIDEBAR_EL, { clearProps: 'x,opacity,pointerEvents' });
-    gsap.set(GAME_AREA, { clearProps: 'gridTemplateColumns' });
+    if (PERKS_SIDEBAR_EL) {
+        if (PERKS_SIDEBAR_EL.classList.contains('collapsed')) {
+            gsap.set(GAME_AREA, { '--left-sidebar-width': '0px' });
+            gsap.set(PERKS_SIDEBAR_EL, { x: -(updatePerksSidebarWidthCache() + 12), opacity: 0.2, pointerEvents: 'none' });
+        } else {
+            gsap.set(GAME_AREA, { '--left-sidebar-width': `${updatePerksSidebarWidthCache()}px` });
+            gsap.set(PERKS_SIDEBAR_EL, { clearProps: 'x,opacity,pointerEvents' });
+        }
+    }
 }
 
 if (SIDEBAR_TOGGLE_EL && GAME_SIDEBAR_EL) {
     SIDEBAR_TOGGLE_EL.addEventListener('click', () => {
         playSound('click');
-        if (isSidebarAutoMode() && !GAME_SIDEBAR_EL.classList.contains('collapsed')) collapseSidebar();
-        else {
+        sidebarPinnedOpen = !sidebarPinnedOpen;
+        if (sidebarPinnedOpen) {
             const activeTab = document.querySelector('.sidebar-tab.active');
             openSidebarPanel(activeTab ? activeTab.getAttribute('data-sidebar-panel') : 'reference-panel');
-        }
+        } else if (isSidebarAutoMode()) collapseSidebar();
+    });
+}
+
+if (PERKS_SIDEBAR_TOGGLE_EL && PERKS_SIDEBAR_EL) {
+    PERKS_SIDEBAR_TOGGLE_EL.addEventListener('click', () => {
+        playSound('click');
+        togglePerksSidebar();
     });
 }
 
