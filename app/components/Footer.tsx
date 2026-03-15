@@ -2,13 +2,13 @@ import Link from 'next/link';
 
 const footerLinks = {
     'Play': [
-        { href: '/play', label: 'Play Now' },
+        { href: '/play', label: 'Play a Round' },
         { href: '/categories', label: 'Collections' },
-        { href: '/how-to-play', label: 'How to Play' },
+        { href: '/how-to-play', label: 'How It Flows' },
         { href: '/faq', label: 'FAQ' },
     ],
-    'Learn': [
-        { href: '/blog', label: 'Blog' },
+    'Read': [
+        { href: '/blog', label: 'Puzzle Notes' },
         { href: '/blog/tips-and-tricks', label: 'Tips & Tricks' },
         { href: '/blog/benefits-of-puzzle-games', label: 'Brain Benefits' },
         { href: '/blog/neuroscience-of-puzzle-solving', label: 'Neuroscience' },
@@ -34,6 +34,7 @@ export default function Footer() {
             borderTop: '1px solid var(--border-light)',
             padding: '3rem 0 2rem',
             marginTop: '4rem',
+            background: 'linear-gradient(180deg, rgba(255,251,244,0.4), rgba(239,245,233,0.8))',
         }}>
             <div className="container">
                 <div style={{
@@ -54,11 +55,11 @@ export default function Footer() {
                         </Link>
                         <p style={{
                             color: 'var(--text-tertiary)',
-                            fontSize: '0.8rem',
+                            fontSize: '0.88rem',
                             marginTop: '0.5rem',
-                            lineHeight: 1.5,
+                            lineHeight: 1.6,
                         }}>
-                            Free, fast, addictive
+                            Cozy puzzle breaks, bright little wins, and calm play at your own pace.
                         </p>
                     </div>
 

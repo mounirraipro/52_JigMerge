@@ -145,7 +145,7 @@ export default function PrivacyPolicyPage() {
                 <h2>13. Contact</h2>
                 <p>
                     Privacy questions can be sent through the <a href="/contact">Contact page</a> or directly to{' '}
-                    <strong>privacy@jigmerge.com</strong>.
+                    <strong>contact@jigmerge.com</strong>.
                 </p>
             </div>
         </>

@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
 import Script from 'next/script';
-import { Inter, Outfit } from "next/font/google";
+import { Baloo_2, Nunito } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { gameCollections, totalPuzzleCount } from './lib/gameData';
 
-const inter = Inter({
+const nunito = Nunito({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-nunito",
   display: "swap",
 });
 
-const outfit = Outfit({
+const baloo = Baloo_2({
   subsets: ["latin"],
-  variable: "--font-outfit",
+  variable: "--font-baloo",
   display: "swap",
 });
 
@@ -108,7 +108,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.variable} ${outfit.variable}`}>
+      <body className={`${nunito.variable} ${baloo.variable}`}>
         <Header />
         <main className="site-main">{children}</main>
         <Footer />

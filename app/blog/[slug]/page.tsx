@@ -113,7 +113,7 @@ export default async function BlogPostPage({
                             marginBottom: '0.75rem',
                         }}
                     >
-                        <Link href="/blog" style={{ color: 'var(--text-secondary)' }}>
+                        <Link href="/blog" style={{ color: 'var(--brand-600)' }}>
                             Blog
                         </Link>{' '}
                         / {post.category}
@@ -126,8 +126,8 @@ export default async function BlogPostPage({
                             gap: '0.5rem',
                             padding: '0.35rem 0.8rem',
                             borderRadius: 'var(--radius-xl)',
-                            background: 'rgba(255, 204, 0, 0.12)',
-                            color: 'var(--text-secondary)',
+                            background: 'rgba(236, 91, 43, 0.12)',
+                            color: 'var(--brand-700)',
                             fontSize: '0.8rem',
                             fontWeight: 600,
                             marginBottom: '1rem',
@@ -152,21 +152,16 @@ export default async function BlogPostPage({
                 />
 
                 <div
-                    className="card"
+                    className="card article-cta-card"
                     style={{
                         marginTop: '2.5rem',
                         padding: '1.5rem',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        gap: '1rem',
-                        flexWrap: 'wrap',
                     }}
                 >
                     <div>
-                        <h2 style={{ margin: 0, fontSize: '1.1rem' }}>Ready for a puzzle break?</h2>
+                        <h2 style={{ margin: 0, fontSize: '1.1rem' }}>Ready for a bright little puzzle break?</h2>
                         <p style={{ margin: '0.5rem 0 0', color: 'var(--text-secondary)' }}>
-                            Jump back into JigMerge and try the strategies from this article.
+                            Jump back into JigMerge and try the ideas from this article on a fresh board.
                         </p>
                     </div>
                     <Link href="/play" className="btn btn-primary">

@@ -79,7 +79,7 @@ export default function SitemapPage() {
                 }}>
                     {sections.map((section) => (
                         <div key={section.title} className="card">
-                            <h2 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--primary-light)' }}>
+                            <h2 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>
                                 {section.title}
                             </h2>
                             <ul style={{ listStyle: 'none', padding: 0 }}>

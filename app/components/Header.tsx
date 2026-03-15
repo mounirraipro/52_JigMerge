@@ -6,8 +6,8 @@ import Link from 'next/link';
 const navLinks = [
   { href: '/play', label: 'Play' },
   { href: '/categories', label: 'Collections' },
-  { href: '/how-to-play', label: 'Guide' },
-  { href: '/blog', label: 'Blog' },
+  { href: '/how-to-play', label: 'How It Flows' },
+  { href: '/blog', label: 'Puzzle Notes' },
   { href: '/about', label: 'About' },
 ];
 
@@ -57,7 +57,7 @@ export default function Header() {
               </Link>
             ))}
             <Link href="/play" className="site-header-cta">
-              Play Now
+              Play a Round
             </Link>
           </nav>
         </div>
@@ -93,9 +93,9 @@ export default function Header() {
         </nav>
 
         <div className="site-drawer-footer">
-          <p>Pick up a quick round, browse guides, or jump straight into the puzzle board.</p>
+          <p>Ease into a light little brain break, browse cozy reads, or hop straight into a fresh board.</p>
           <Link href="/play" className="site-drawer-cta" onClick={() => setIsOpen(false)}>
-            Start Playing
+            Start a Cozy Round
           </Link>
         </div>
       </aside>

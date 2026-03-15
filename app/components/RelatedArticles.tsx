@@ -36,11 +36,9 @@ export default function RelatedArticles({ articles }: RelatedArticlesProps) {
                     <Link
                         key={article.slug}
                         href={`/blog/${article.slug}`}
+                        className="related-article-link"
                         style={{
                             textDecoration: 'none',
-                            display: 'flex',
-                            alignItems: 'baseline',
-                            gap: '0.75rem',
                             padding: '0.75rem 0',
                             borderBottom: '1px solid var(--border-light)',
                             transition: 'opacity 0.15s ease',
@@ -49,7 +47,7 @@ export default function RelatedArticles({ articles }: RelatedArticlesProps) {
                         <span style={{
                             fontSize: '0.7rem',
                             fontWeight: 600,
-                            color: 'var(--primary-light)',
+                            color: 'var(--brand-600)',
                             flexShrink: 0,
                             minWidth: '52px',
                         }}>
@@ -57,10 +55,10 @@ export default function RelatedArticles({ articles }: RelatedArticlesProps) {
                         </span>
                         <span style={{
                             fontSize: '0.95rem',
-                            color: 'var(--text)',
+                            color: 'var(--text-primary)',
                             fontWeight: 500,
                             lineHeight: 1.4,
-                        }}>
+                        }} className="related-article-title">
                             {article.title}
                         </span>
                         <span style={{
@@ -68,7 +66,7 @@ export default function RelatedArticles({ articles }: RelatedArticlesProps) {
                             color: 'var(--text-tertiary)',
                             flexShrink: 0,
                             marginLeft: 'auto',
-                        }}>
+                        }} className="related-article-time">
                             {article.readTime}
                         </span>
                     </Link>

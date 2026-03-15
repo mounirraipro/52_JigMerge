@@ -61,7 +61,7 @@ function buildCollection(id: number, gridCols: number, gridRows: number, puzzleC
     Expert: `Collection ${String(id).padStart(2, '0')} matches the large-format ${gridLabel} boards used in the embedded game. These runs are the closest thing JigMerge has to endurance mode: bigger surfaces, slower reveals, and a stronger reward for calm sequencing.`,
   } as const;
 
-  const color = isStarter ? '#d97706' : isClassic ? '#0f766e' : '#b91c1c';
+  const color = isStarter ? '#ec5b2b' : isClassic ? '#2f6b45' : '#7e9e62';
 
   return {
     id,

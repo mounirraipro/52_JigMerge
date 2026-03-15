@@ -106,7 +106,7 @@ export default function CookiePolicyPage() {
                 <h2>8. Contact</h2>
                 <p>
                     Questions about cookies or browser storage can be sent through the{' '}
-                    <a href="/contact">Contact page</a> or to <strong>privacy@jigmerge.com</strong>.
+                    <a href="/contact">Contact page</a> or to <strong>contact@jigmerge.com</strong>.
                 </p>
             </div>
         </>

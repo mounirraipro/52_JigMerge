@@ -5,7 +5,7 @@ export default function NotFound() {
     return (
         <div className="container" style={{
             height: '100vh',
-            width: '100vw',
+            width: '100%',
             maxWidth: '100%',
             display: 'flex',
             flexDirection: 'column',
@@ -15,7 +15,7 @@ export default function NotFound() {
             padding: '2rem',
             position: 'relative',
             overflow: 'hidden',
-            color: '#fff',
+            color: '#fffdf8',
             marginTop: '-80px', // Pull up behind header if possible to ensure full coverage
         }}>
             <style dangerouslySetInnerHTML={{
@@ -53,11 +53,11 @@ export default function NotFound() {
                 />
             </div>
 
-            {/* Dark Overlay */}
+            {/* Warm Overlay */}
             <div style={{
                 position: 'absolute',
                 inset: 0,
-                background: 'rgba(0,0,0,0.5)',
+                background: 'linear-gradient(180deg, rgba(31, 62, 39, 0.38), rgba(22, 44, 27, 0.48))',
                 zIndex: -1,
                 backdropFilter: 'blur(3px)'
             }} />
@@ -80,7 +80,7 @@ export default function NotFound() {
                     fontWeight: 600,
                     textShadow: '0 2px 10px rgba(0,0,0,0.5)'
                 }}>
-                    Lost in the puzzle?
+                    Took a wrong turn on the cozy path?
                 </h2>
 
                 <p className="animate-text delay-3" style={{
@@ -92,17 +92,17 @@ export default function NotFound() {
                     marginLeft: 'auto',
                     marginRight: 'auto'
                 }}>
-                    The piece you&apos;re looking for seems to be missing. It might have been moved, deleted, or never existed in the first place.
+                    The page you wanted is not here right now. It may have moved, changed, or simply slipped between the puzzle pieces.
                 </p>
 
                 <div className="animate-text delay-4">
                     <Link href="/" className="btn btn-primary" style={{
-                        padding: '1rem 3rem',
+                        padding: '1rem min(3rem, 8vw)',
                         fontSize: '1.2rem',
                         boxShadow: '0 8px 30px rgba(232, 97, 77, 0.4)',
                         border: '1px solid rgba(255,255,255,0.2)'
                     }}>
-                        Back to Safety
+                        Back to JigMerge
                     </Link>
                 </div>
             </div>

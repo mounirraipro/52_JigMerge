@@ -17,7 +17,7 @@ export default function Sources({ sources }: SourcesProps) {
             paddingTop: '1.5rem',
             borderTop: '1px solid var(--border-light)',
         }}>
-            <h2 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--text-secondary)' }}>
+            <h2 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>
                 Sources &amp; References
             </h2>
             <ol style={{
@@ -37,7 +37,7 @@ export default function Sources({ sources }: SourcesProps) {
                                 href={source.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                style={{ color: 'var(--primary-light)' }}
+                                style={{ color: 'var(--brand-600)' }}
                             >
                                 {source.text}
                             </a>

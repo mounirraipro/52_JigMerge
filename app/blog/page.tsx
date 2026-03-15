@@ -29,7 +29,7 @@ export default function BlogPage() {
             <div className="page-header">
                 <div className="container">
                     <h1 className="gradient-text">JigMerge Blog</h1>
-                    <p>Tips, insights, and stories from the world of puzzles.</p>
+                    <p>Cozy reads, useful tips, and thoughtful little stories from the world of puzzles.</p>
                 </div>
             </div>
 
@@ -62,7 +62,7 @@ export default function BlogPage() {
                                 background:
                                     activeCategory === cat
                                         ? 'var(--primary)'
-                                        : 'rgba(108, 92, 231, 0.1)',
+                                        : 'rgba(47, 107, 69, 0.1)',
                                 color:
                                     activeCategory === cat ? '#fff' : 'var(--primary-light)',
                                 transition: 'all 0.2s ease',
@@ -92,25 +92,17 @@ export default function BlogPage() {
                             style={{ textDecoration: 'none' }}
                         >
                             <article
-                                className="card animate-in"
+                                className="card animate-in blog-list-card"
                                 style={{
                                     animationDelay: `${0.1 + i * 0.05}s`,
-                                    display: 'flex',
-                                    gap: '1.5rem',
                                     cursor: 'pointer',
-                                    alignItems: 'flex-start',
                                 }}
                             >
                                 <div
+                                    className="blog-list-icon"
                                     style={{
                                         fontSize: '2.5rem',
-                                        flexShrink: 0,
-                                        width: '80px',
-                                        height: '80px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        background: 'rgba(108, 92, 231, 0.1)',
+                                        background: 'linear-gradient(135deg, rgba(47, 107, 69, 0.12), rgba(236, 91, 43, 0.1))',
                                         borderRadius: 'var(--radius-md)',
                                     }}
                                 >
@@ -118,21 +110,13 @@ export default function BlogPage() {
                                 </div>
 
                                 <div style={{ flex: 1 }}>
-                                    <div
-                                        style={{
-                                            display: 'flex',
-                                            gap: '1rem',
-                                            marginBottom: '0.5rem',
-                                            fontSize: '0.8rem',
-                                            color: 'var(--text-muted)',
-                                        }}
-                                    >
+                                    <div className="blog-list-meta">
                                         <span
                                             style={{
                                                 padding: '0.2rem 0.6rem',
                                                 borderRadius: 'var(--radius-xl)',
-                                                background: 'rgba(108, 92, 231, 0.15)',
-                                                color: 'var(--primary-light)',
+                                                background: 'rgba(236, 91, 43, 0.14)',
+                                                color: 'var(--brand-700)',
                                                 fontWeight: 600,
                                             }}
                                         >

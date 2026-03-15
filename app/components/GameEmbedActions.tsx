@@ -95,7 +95,7 @@ export default function GameEmbedActions({ targetId, shareUrl = '/play' }: GameE
     const url = new URL(shareUrl, window.location.origin).toString();
     const shareData = {
       title: 'JigMerge',
-      text: 'Play JigMerge online.',
+      text: 'Take a cozy puzzle break with JigMerge.',
       url,
     };
 
@@ -126,12 +126,12 @@ export default function GameEmbedActions({ targetId, shareUrl = '/play' }: GameE
     alignItems: 'center',
     justifyContent: 'center',
     gap: '0.5rem',
-    minWidth: '160px',
+    minWidth: '140px',
     padding: '0.9rem 1.1rem',
     borderRadius: '999px',
     border: '1px solid var(--border-light)',
-    background: 'var(--bg-card)',
-    color: 'var(--text-primary)',
+    background: 'rgba(255, 252, 244, 0.88)',
+    color: 'var(--brand-700)',
     fontWeight: 600,
     cursor: 'pointer',
     boxShadow: 'var(--shadow-sm)',
@@ -152,7 +152,7 @@ export default function GameEmbedActions({ targetId, shareUrl = '/play' }: GameE
           <path d="M8 21H5a2 2 0 0 1-2-2v-3" />
           <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
         </svg>
-        <span>{isExpanded ? 'Exit Fullscreen' : 'Fullscreen'}</span>
+        <span>{isExpanded ? 'Shrink View' : 'Open Wide'}</span>
       </button>
       <button type="button" onClick={handleShare} style={buttonStyle}>
         <svg style={iconStyle} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -162,7 +162,7 @@ export default function GameEmbedActions({ targetId, shareUrl = '/play' }: GameE
           <path d="M8.59 13.51 15.42 17.49" />
           <path d="M15.41 6.51 8.59 10.49" />
         </svg>
-        <span>Share</span>
+        <span>Share JigMerge</span>
       </button>
     </div>
   );

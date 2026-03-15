@@ -16,7 +16,7 @@ export default function CategoriesPage() {
         <div className="container">
           <h1 className="gradient-text">Puzzle Collections</h1>
           <p>
-            Browse the live collections from the embedded game and jump straight into the board size you want.
+            Browse every live collection in JigMerge and choose the board size that matches your mood, pace, and puzzle energy.
           </p>
         </div>
       </div>

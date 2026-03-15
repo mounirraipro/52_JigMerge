@@ -2,10 +2,7 @@
 
 import { useState } from 'react';
 
-const SUPPORT_EMAIL = 'hello@jigmerge.com';
-const PRIVACY_EMAIL = 'privacy@jigmerge.com';
-const LEGAL_EMAIL = 'legal@jigmerge.com';
-const ACCESSIBILITY_EMAIL = 'accessibility@jigmerge.com';
+const CONTACT_EMAIL = 'contact@jigmerge.com';
 
 export default function ContactPage() {
     const [submitted, setSubmitted] = useState(false);
@@ -28,7 +25,7 @@ export default function ContactPage() {
             formData.message,
         ].join('\n');
 
-        const mailtoUrl = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
+        const mailtoUrl = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
 
         window.location.href = mailtoUrl;
         setSubmitted(true);
@@ -39,7 +36,7 @@ export default function ContactPage() {
             <div className="page-header">
                 <div className="container">
                     <h1 className="gradient-text">Contact Us</h1>
-                    <p>Questions, bug reports, privacy concerns, accessibility feedback, or partnership inquiries are all welcome.</p>
+                    <p>Questions, bug reports, privacy concerns, accessibility feedback, or partnership ideas are all welcome here.</p>
                 </div>
             </div>
 
@@ -47,28 +44,26 @@ export default function ContactPage() {
                 <div style={{ maxWidth: '700px', margin: '0 auto' }}>
                     <h2>How to Reach Us</h2>
                     <p>
-                        The fastest way to contact us is by email. We keep the contact flow simple on purpose:
-                        there is no account system, ticket portal, or required login just to ask a question.
-                        Use the topic that fits best, and include as much detail as you can.
+                        The fastest way to reach JigMerge is by email. We keep the contact flow simple on purpose:
+                        no account walls, no support portal, and no maze of different inboxes. Everything routes through one address.
                     </p>
 
                     <div
                         style={{
                             display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
                             gap: '1rem',
                             margin: '2rem 0',
                         }}
                     >
                         {[
-                            { label: 'General Support', value: SUPPORT_EMAIL },
-                            { label: 'Privacy', value: PRIVACY_EMAIL },
-                            { label: 'Legal', value: LEGAL_EMAIL },
-                            { label: 'Accessibility', value: ACCESSIBILITY_EMAIL },
+                            { label: 'General Questions', desc: 'Gameplay, bugs, feedback, and collection requests.', value: CONTACT_EMAIL },
+                            { label: 'Trust & Policy', desc: 'Privacy, legal, and accessibility questions all come here too.', value: CONTACT_EMAIL },
                         ].map((item) => (
                             <div key={item.label} className="card" style={{ padding: '1.25rem' }}>
                                 <strong style={{ display: 'block', marginBottom: '0.35rem' }}>{item.label}</strong>
-                                <span style={{ color: 'var(--text-secondary)', fontSize: '0.92rem' }}>{item.value}</span>
+                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', marginBottom: '0.45rem' }}>{item.desc}</p>
+                                <span style={{ color: 'var(--brand-700)', fontSize: '0.92rem', fontWeight: 700 }}>{item.value}</span>
                             </div>
                         ))}
                     </div>
@@ -95,7 +90,7 @@ export default function ContactPage() {
                             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📨</div>
                             <h3 style={{ marginBottom: '0.5rem' }}>Your email app should be opening</h3>
                             <p style={{ color: 'var(--text-secondary)' }}>
-                                If it did not, send your message manually to {SUPPORT_EMAIL}.
+                                If it did not, send your message manually to {CONTACT_EMAIL}.
                             </p>
                         </div>
                     ) : (

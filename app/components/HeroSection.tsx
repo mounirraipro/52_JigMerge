@@ -9,22 +9,22 @@ const PUZZLE_PATH =
 
 /* ── Floating tile config ── */
 const TILES = [
-    { x: '8%', y: '12%', size: 64, rotation: 15, delay: 0, color: 'rgba(232,97,77,0.15)' },
-    { x: '85%', y: '8%', size: 52, rotation: -20, delay: 0.3, color: 'rgba(232,97,77,0.12)' },
-    { x: '92%', y: '55%', size: 70, rotation: 35, delay: 0.6, color: 'rgba(232,97,77,0.10)' },
-    { x: '5%', y: '65%', size: 58, rotation: -10, delay: 0.9, color: 'rgba(232,97,77,0.13)' },
-    { x: '75%', y: '82%', size: 48, rotation: 25, delay: 1.2, color: 'rgba(232,97,77,0.11)' },
-    { x: '20%', y: '80%', size: 42, rotation: -30, delay: 0.5, color: 'rgba(232,97,77,0.09)' },
-    { x: '65%', y: '15%', size: 38, rotation: 45, delay: 0.8, color: 'rgba(232,97,77,0.10)' },
-    { x: '40%', y: '85%', size: 56, rotation: -15, delay: 1.0, color: 'rgba(232,97,77,0.12)' },
+    { x: '8%', y: '12%', size: 64, rotation: 15, delay: 0, color: 'rgba(47,107,69,0.14)' },
+    { x: '85%', y: '8%', size: 52, rotation: -20, delay: 0.3, color: 'rgba(236,91,43,0.12)' },
+    { x: '92%', y: '55%', size: 70, rotation: 35, delay: 0.6, color: 'rgba(47,107,69,0.1)' },
+    { x: '5%', y: '65%', size: 58, rotation: -10, delay: 0.9, color: 'rgba(236,91,43,0.14)' },
+    { x: '75%', y: '82%', size: 48, rotation: 25, delay: 1.2, color: 'rgba(47,107,69,0.11)' },
+    { x: '20%', y: '80%', size: 42, rotation: -30, delay: 0.5, color: 'rgba(236,91,43,0.08)' },
+    { x: '65%', y: '15%', size: 38, rotation: 45, delay: 0.8, color: 'rgba(98,155,95,0.11)' },
+    { x: '40%', y: '85%', size: 56, rotation: -15, delay: 1.0, color: 'rgba(47,107,69,0.12)' },
 ];
 
 /* ── Glowing orb config ── */
 const ORBS = [
-    { x: '15%', y: '25%', size: 280, color: 'rgba(232,97,77,0.06)' },
-    { x: '80%', y: '60%', size: 320, color: 'rgba(232,97,77,0.05)' },
-    { x: '50%', y: '10%', size: 200, color: 'rgba(200,189,178,0.08)' },
-    { x: '30%', y: '70%', size: 240, color: 'rgba(232,97,77,0.04)' },
+    { x: '15%', y: '25%', size: 280, color: 'rgba(47,107,69,0.09)' },
+    { x: '80%', y: '60%', size: 320, color: 'rgba(236,91,43,0.08)' },
+    { x: '50%', y: '10%', size: 200, color: 'rgba(186,211,167,0.18)' },
+    { x: '30%', y: '70%', size: 240, color: 'rgba(236,91,43,0.05)' },
 ];
 
 export default function HeroSection() {
@@ -227,7 +227,7 @@ export default function HeroSection() {
                     }}
                 >
                     <svg viewBox="0 0 60 50" fill={tile.color} xmlns="http://www.w3.org/2000/svg">
-                        <path d={PUZZLE_PATH} stroke="rgba(232,97,77,0.2)" strokeWidth="1" />
+                        <path d={PUZZLE_PATH} stroke="rgba(47,107,69,0.18)" strokeWidth="1" />
                     </svg>
                 </div>
             ))}
@@ -239,16 +239,16 @@ export default function HeroSection() {
             <div className="container hero-content">
                 <p className="hero-badge" ref={badgeRef}>
                     <span className="hero-badge-dot" />
-                    Free to play · No downloads · Instant fun
+                    Light theme · Cozy pace · Free to play
                 </p>
 
                 <h1 ref={headlineRef}>
-                    The puzzle game your brain has been waiting for
+                    Give your brain a bright, cozy little win
                 </h1>
 
                 <p className="hero-subtitle" ref={subtitleRef}>
-                    Swap tiles, watch them merge, and restore stunning images. JigMerge blends
-                    the calm of jigsaw puzzles with the strategy of solitaire into something entirely new.
+                    JigMerge keeps the same clever tile-swap challenge, now wrapped in a lighter, calmer world.
+                    Drift through playful boards, spot satisfying patterns, and settle into a puzzle rhythm that feels warm from the very first move.
                 </p>
 
                 <div className="hero-cta" ref={ctaRef}>
@@ -256,10 +256,10 @@ export default function HeroSection() {
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <polygon points="5 3 19 12 5 21 5 3" />
                         </svg>
-                        Start Playing
+                        Start a Cozy Round
                     </Link>
                     <Link href="/how-to-play" className="btn btn-secondary btn-hero">
-                        See How It Works
+                        Learn the Flow
                     </Link>
                 </div>
             </div>
